@@ -53,7 +53,37 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        throw new RuntimeException("Not implemented");
+        PieceType type = board.getPiece(myPosition).getPieceType();
+        Collection<ChessMove> possibleMoves;
+        switch (type) {
+            case PieceType.KING:
+                KingMoves kingMoveGenerator = new KingMoves(board, myPosition);
+                possibleMoves = kingMoveGenerator.GenerateMoves();
+                break;
+            case PieceType.QUEEN:
+                QueenMoves queenMoveGenerator = new QueenMoves(board, myPosition);
+                possibleMoves = queenMoveGenerator.GenerateMoves();
+                break;
+            case PieceType.ROOK:
+                RookMoves rookMoveGenerator = new RookMoves(board, myPosition);
+                possibleMoves = rookMoveGenerator.GenerateMoves();
+                break;
+            case PieceType.BISHOP:
+                BishopMoves bishopMoveGenerator = new BishopMoves(board, myPosition);
+                possibleMoves = bishopMoveGenerator.GenerateMoves();
+                break;
+            case PieceType.KNIGHT:
+                KnightMoves knightMoveGenerator = new KnightMoves(board, myPosition);
+                possibleMoves = knightMoveGenerator.GenerateMoves();
+                break;
+            case PieceType.PAWN:
+                PawnMoves pawnMoveGenerator = new PawnMoves(board, myPosition);
+                possibleMoves = pawnMoveGenerator.GenerateMoves();
+                break;
+            default:
+                throw new RuntimeException("Cannot list moves for unknown piece");
+        }
+        return possibleMoves;
     }
 
     @Override
