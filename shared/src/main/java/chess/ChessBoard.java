@@ -1,5 +1,8 @@
 package chess;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 /**
  * A chessboard that can hold and rearrange chess pieces.
  * <p>
@@ -8,8 +11,10 @@ package chess;
  */
 public class ChessBoard {
 
+    private ChessPiece[][] layout;
+
     public ChessBoard() {
-        
+        layout = new ChessPiece[8][8];
     }
 
     /**
@@ -19,7 +24,7 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        throw new RuntimeException("Not implemented");
+        this.layout[position.getRow()-1][position.getColumn()-1] = piece;
     }
 
     /**
@@ -30,7 +35,7 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        throw new RuntimeException("Not implemented");
+        return this.layout[position.getRow()-1][position.getColumn()-1];
     }
 
     /**
@@ -38,6 +43,40 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        throw new RuntimeException("Not implemented");
+        ChessPiece.PieceType[] nonPawnOrder = {ChessPiece.PieceType.ROOK, ChessPiece.PieceType.KNIGHT, ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.QUEEN, ChessPiece.PieceType.KING, ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.KNIGHT, ChessPiece.PieceType.ROOK};
+        for (int i = 0; i < 8; i++) {
+            ChessPiece whitePiece = new ChessPiece(ChessGame.TeamColor.WHITE, nonPawnOrder[i]);
+            ChessPosition whitePos = new ChessPosition(1, i+1);
+            this.addPiece(whitePos, whitePiece);
+        }
+        for (int i = 0; i < 8; i++) {
+            ChessPiece whitePawn = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
+            ChessPosition whitePos = new ChessPosition(2, i+1);
+            this.addPiece(whitePos, whitePawn);
+        }
+        for (int i = 0; i < 8; i++) {
+            ChessPiece blackPawn = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
+            ChessPosition blackPos = new ChessPosition(7, i+1);
+            this.addPiece(blackPos, blackPawn);
+        }
+        for (int i = 0; i < 8; i++) {
+            ChessPiece blackPiece = new ChessPiece(ChessGame.TeamColor.BLACK, nonPawnOrder[i]);
+            ChessPosition blackPos = new ChessPosition(8, i+1);
+            this.addPiece(blackPos, blackPiece);
+        }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessBoard that = (ChessBoard) o;
+        return Objects.deepEquals(layout, that.layout);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.deepHashCode(layout);
     }
 }
