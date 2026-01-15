@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 public class KnightMoves {
@@ -13,7 +14,9 @@ public class KnightMoves {
     }
 
     public Collection<ChessMove> GenerateMoves() {
-        throw new RuntimeException("Not implemented");
+        ArrayList<ChessMove> possibleMoves = new ArrayList<ChessMove>();
+
+        return possibleMoves;
     }
 
 }
