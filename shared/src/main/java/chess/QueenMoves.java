@@ -17,8 +17,8 @@ public class QueenMoves {
         ArrayList<ChessMove> possibleMoves = new ArrayList<ChessMove>();
         RookMoves rookMoveGenerator = new RookMoves(this.board, this.position);
         BishopMoves bishopMoveGenerator = new BishopMoves(this.board, this.position);
-        possibleMoves.addAll(rookMoveGenerator.GenerateMoves());
-        possibleMoves.addAll(bishopMoveGenerator.GenerateMoves());
+        possibleMoves.addAll(rookMoveGenerator.generateMoves());
+        possibleMoves.addAll(bishopMoveGenerator.generateMoves());
         return possibleMoves;
     }
 
