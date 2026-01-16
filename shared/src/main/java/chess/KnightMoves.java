@@ -13,7 +13,7 @@ public class KnightMoves {
         this.position = position;
     }
 
-    public Collection<ChessMove> GenerateMoves() {
+    public Collection<ChessMove> generateMoves() {
         ArrayList<ChessMove> possibleMoves = new ArrayList<ChessMove>();
         int row = this.position.getRow();
         int col = this.position.getColumn();

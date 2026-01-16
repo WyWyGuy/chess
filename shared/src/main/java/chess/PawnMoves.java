@@ -13,7 +13,7 @@ public class PawnMoves {
         this.position = position;
     }
 
-    public Collection<ChessMove> GenerateMoves() {
+    public Collection<ChessMove> generateMoves() {
         ArrayList<ChessMove> possibleMoves = new ArrayList<ChessMove>();
         ChessPiece thisPawn = this.board.getPiece(this.position);
         ChessGame.TeamColor thisPawnColor = thisPawn.getTeamColor();

@@ -58,27 +58,27 @@ public class ChessPiece {
         switch (type) {
             case PieceType.KING:
                 KingMoves kingMoveGenerator = new KingMoves(board, myPosition);
-                possibleMoves = kingMoveGenerator.GenerateMoves();
+                possibleMoves = kingMoveGenerator.generateMoves();
                 break;
             case PieceType.QUEEN:
                 QueenMoves queenMoveGenerator = new QueenMoves(board, myPosition);
-                possibleMoves = queenMoveGenerator.GenerateMoves();
+                possibleMoves = queenMoveGenerator.generateMoves();
                 break;
             case PieceType.ROOK:
                 RookMoves rookMoveGenerator = new RookMoves(board, myPosition);
-                possibleMoves = rookMoveGenerator.GenerateMoves();
+                possibleMoves = rookMoveGenerator.generateMoves();
                 break;
             case PieceType.BISHOP:
                 BishopMoves bishopMoveGenerator = new BishopMoves(board, myPosition);
-                possibleMoves = bishopMoveGenerator.GenerateMoves();
+                possibleMoves = bishopMoveGenerator.generateMoves();
                 break;
             case PieceType.KNIGHT:
                 KnightMoves knightMoveGenerator = new KnightMoves(board, myPosition);
-                possibleMoves = knightMoveGenerator.GenerateMoves();
+                possibleMoves = knightMoveGenerator.generateMoves();
                 break;
             case PieceType.PAWN:
                 PawnMoves pawnMoveGenerator = new PawnMoves(board, myPosition);
-                possibleMoves = pawnMoveGenerator.GenerateMoves();
+                possibleMoves = pawnMoveGenerator.generateMoves();
                 break;
             default:
                 throw new RuntimeException("Cannot list moves for unknown piece");

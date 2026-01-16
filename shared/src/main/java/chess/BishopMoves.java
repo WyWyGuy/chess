@@ -13,7 +13,7 @@ public class BishopMoves {
         this.position = position;
     }
 
-    public Collection<ChessMove> GenerateMoves() {
+    public Collection<ChessMove> generateMoves() {
         ArrayList<ChessMove> possibleMoves = new ArrayList<ChessMove>();
         if ((this.position.getRow() < 8) && (this.position.getColumn() < 8)) {
             int newRow = this.position.getRow() + 1;

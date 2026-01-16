@@ -13,7 +13,7 @@ public class QueenMoves {
         this.position = position;
     }
 
-    public Collection<ChessMove> GenerateMoves() {
+    public Collection<ChessMove> generateMoves() {
         ArrayList<ChessMove> possibleMoves = new ArrayList<ChessMove>();
         RookMoves rookMoveGenerator = new RookMoves(this.board, this.position);
         BishopMoves bishopMoveGenerator = new BishopMoves(this.board, this.position);
