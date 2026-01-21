@@ -43,7 +43,16 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        ChessPiece.PieceType[] nonPawnOrder = {ChessPiece.PieceType.ROOK, ChessPiece.PieceType.KNIGHT, ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.QUEEN, ChessPiece.PieceType.KING, ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.KNIGHT, ChessPiece.PieceType.ROOK};
+        ChessPiece.PieceType[] nonPawnOrder = {
+                ChessPiece.PieceType.ROOK,
+                ChessPiece.PieceType.KNIGHT,
+                ChessPiece.PieceType.BISHOP,
+                ChessPiece.PieceType.QUEEN,
+                ChessPiece.PieceType.KING,
+                ChessPiece.PieceType.BISHOP,
+                ChessPiece.PieceType.KNIGHT,
+                ChessPiece.PieceType.ROOK
+        };
         for (int i = 0; i < 8; i++) {
             ChessPiece whitePiece = new ChessPiece(ChessGame.TeamColor.WHITE, nonPawnOrder[i]);
             ChessPosition whitePos = new ChessPosition(1, i+1);
@@ -63,6 +72,12 @@ public class ChessBoard {
             ChessPiece blackPiece = new ChessPiece(ChessGame.TeamColor.BLACK, nonPawnOrder[i]);
             ChessPosition blackPos = new ChessPosition(8, i+1);
             this.addPiece(blackPos, blackPiece);
+        }
+        for (int i = 3; i <= 6; i++) {
+            for (int j = 1; j <= 8; j++) {
+                ChessPosition emptySpace = new ChessPosition(i, j);
+                this.addPiece(emptySpace, null);
+            }
         }
     }
 
