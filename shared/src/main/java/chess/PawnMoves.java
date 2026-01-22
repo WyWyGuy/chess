@@ -49,7 +49,8 @@ public class PawnMoves {
             if (this.position.getColumn() > 1) {
                 ChessPosition potentialLeftCapture = new ChessPosition(this.position.getRow() + (isWhite ? 1 : -1), this.position.getColumn() - 1);
                 ChessPiece potentialLeftCapturePiece = this.board.getPiece(potentialLeftCapture);
-                if ((potentialLeftCapturePiece != null) && (potentialLeftCapturePiece.getTeamColor() != this.board.getPiece(this.position).getTeamColor())) {
+                if ((potentialLeftCapturePiece != null) &&
+                        (potentialLeftCapturePiece.getTeamColor() != this.board.getPiece(this.position).getTeamColor())) {
                     if (((isWhite) && (potentialLeftCapture.getRow() < 8)) || ((!isWhite) && (potentialLeftCapture.getRow() > 1))) {
                         ChessMove possibleLeftCapture = new ChessMove(this.position, potentialLeftCapture, null);
                         possibleMoves.add(possibleLeftCapture);
@@ -68,7 +69,8 @@ public class PawnMoves {
             if (this.position.getColumn() < 8) {
                 ChessPosition potentialRightCapture = new ChessPosition(this.position.getRow() + (isWhite ? 1 : -1), this.position.getColumn() + 1);
                 ChessPiece potentialRightCapturePiece = this.board.getPiece(potentialRightCapture);
-                if ((potentialRightCapturePiece != null) && (potentialRightCapturePiece.getTeamColor() != this.board.getPiece(this.position).getTeamColor())) {
+                if ((potentialRightCapturePiece != null) &&
+                        (potentialRightCapturePiece.getTeamColor() != this.board.getPiece(this.position).getTeamColor())) {
                     if (((isWhite) && (potentialRightCapture.getRow() < 8)) || ((!isWhite) && (potentialRightCapture.getRow() > 1))) {
                         ChessMove possibleRightCapture = new ChessMove(this.position, potentialRightCapture, null);
                         possibleMoves.add(possibleRightCapture);
