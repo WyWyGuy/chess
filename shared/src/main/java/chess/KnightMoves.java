@@ -21,16 +21,14 @@ public class KnightMoves {
         int newCol;
         for (int r = -2; r <= 2; r++) {
             for (int c = -2; c <= 2; c++) {
-                if ((c != 0) && (r != 0) && (Math.abs(r) != Math.abs(c))) {
-                    newRow = row + r;
-                    newCol = col + c;
-                    if ((newRow >= 1) && (newRow <= 8) && (newCol >= 1) && (newCol <= 8)) {
-                        ChessPosition newPos = new ChessPosition(newRow, newCol);
-                        ChessPiece pieceAlreadyThere = this.board.getPiece(newPos);
-                        if ((pieceAlreadyThere == null) || (pieceAlreadyThere.getTeamColor() != this.board.getPiece(this.position).getTeamColor())) {
-                            ChessMove possibleMove = new ChessMove(this.position, newPos, null);
-                            possibleMoves.add(possibleMove);
-                        }
+                newRow = row + r;
+                newCol = col + c;
+                if ((c != 0) && (r != 0) && (Math.abs(r) != Math.abs(c)) && (newRow >= 1) && (newRow <= 8) && (newCol >= 1) && (newCol <= 8)) {
+                    ChessPosition newPos = new ChessPosition(newRow, newCol);
+                    ChessPiece pieceAlreadyThere = this.board.getPiece(newPos);
+                    if ((pieceAlreadyThere == null) || (pieceAlreadyThere.getTeamColor() != this.board.getPiece(this.position).getTeamColor())) {
+                        ChessMove possibleMove = new ChessMove(this.position, newPos, null);
+                        possibleMoves.add(possibleMove);
                     }
                 }
             }
