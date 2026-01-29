@@ -71,6 +71,16 @@ public class ChessGame {
         throw new NoKingFoundException(String.format("%s king not found on the board.", color));
     }
 
+    public boolean leavesKingInCheck(TeamColor color, ChessMove move) {
+        //
+        return false;
+    }
+
+    public Collection<ChessMove> generateAllValidTeamMoves(TeamColor color) {
+        //
+        return null;
+    }
+
     /**
      * Gets a valid moves for a piece at the given location
      *
@@ -83,8 +93,15 @@ public class ChessGame {
         if (pieceThere == null) {
             return null;
         } else {
-            //Need some more logic here
-            return pieceThere.pieceMoves(this.board, startPosition);
+            TeamColor pieceColor = pieceThere.getTeamColor();
+            Collection<ChessMove> allowedMoves = pieceThere.pieceMoves(this.board, startPosition);
+            //Add chessPiece and enPassant
+            for (ChessMove possibleMove : allowedMoves) {
+                if (leavesKingInCheck(pieceColor, possibleMove)) {
+                    allowedMoves.remove(possibleMove);
+                }
+            }
+            return allowedMoves;
         }
     }
 
@@ -149,13 +166,15 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        ChessPosition kingPosition;
-        try {
-            kingPosition = this.getKingPosition(teamColor);
-        } catch (NoKingFoundException e) {
+        if (!this.isInCheck(teamColor)) {
             return false;
         }
-        return false; //Need more logic
+        //Generate all pseudo-moves (and any possible en passants)
+        //Create a fake board for each of them
+        //Perform that move on the fake board
+        //Check if still in check
+        //if not, return false
+        return true;
     }
 
     /**
@@ -166,9 +185,12 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        return false;
-        //Needs more logic
-        //Not in check, All pieces moves combined are zero moves.
+        if (this.isInCheck(teamColor)) {
+            return false;
+        }
+        //Generate all valid-moves (includes any valid en passants and castling)
+        //if len(valid-moves > 0) {return false}
+        return true;
     }
 
     /**
