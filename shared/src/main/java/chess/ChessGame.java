@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -32,6 +33,18 @@ public class ChessGame {
         this.blackRightRookHasMoved = false;
         this.blackKingHasMoved = false;
         this.isEnPassantable = null;
+    }
+
+    public ChessGame(ChessGame original) {
+        this.currentTurn = original.currentTurn;
+        this.board = new ChessBoard(original.board);
+        this.whiteLeftRookHasMoved = original.whiteLeftRookHasMoved;
+        this.whiteRightRookHasMoved = original.whiteRightRookHasMoved;
+        this.whiteKingHasMoved = original.whiteKingHasMoved;
+        this.blackLeftRookHasMoved = original.blackLeftRookHasMoved;
+        this.blackRightRookHasMoved = original.blackRightRookHasMoved;
+        this.blackKingHasMoved = original.blackKingHasMoved;
+        this.isEnPassantable = original.isEnPassantable;
     }
 
     /**
@@ -72,13 +85,13 @@ public class ChessGame {
     }
 
     public boolean leavesKingInCheck(TeamColor color, ChessMove move) {
-        //
-        return false;
-    }
-
-    public Collection<ChessMove> generateAllValidTeamMoves(TeamColor color) {
-        //
-        return null;
+        ChessGame gameCopy = new ChessGame(this);
+        ChessPiece movingPiece = gameCopy.board.getPiece(move.getStartPosition());
+        gameCopy.board.addPiece(move.getEndPosition(), movingPiece);
+        gameCopy.board.addPiece(move.getStartPosition(), null);
+        //remove pawn if en passanting
+        //move rook if castling
+        return gameCopy.isInCheck(color);
     }
 
     /**
@@ -94,11 +107,13 @@ public class ChessGame {
             return null;
         } else {
             TeamColor pieceColor = pieceThere.getTeamColor();
-            Collection<ChessMove> allowedMoves = pieceThere.pieceMoves(this.board, startPosition);
-            //Add chessPiece and enPassant
-            for (ChessMove possibleMove : allowedMoves) {
-                if (leavesKingInCheck(pieceColor, possibleMove)) {
-                    allowedMoves.remove(possibleMove);
+            Collection<ChessMove> defaultMoves = pieceThere.pieceMoves(this.board, startPosition);
+            Collection<ChessMove> allowedMoves = new ArrayList<ChessMove>();
+            //Add castling if possible and isn't in check/through check/end in check
+            //Add enPassant if it's possible
+            for (ChessMove possibleMove : defaultMoves) {
+                if (!leavesKingInCheck(pieceColor, possibleMove)) {
+                    allowedMoves.add(possibleMove);
                 }
             }
             return allowedMoves;
@@ -117,7 +132,7 @@ public class ChessGame {
         if (validMoves != null && validMoves.contains(move)) {
             this.board.addPiece(move.getEndPosition(), movingPiece);
             this.board.addPiece(move.getStartPosition(), null);
-            //If castling, move rook too. (test by "king moves for the first time and it's two?")
+            //If castling, move rook too. (test by "king moves two?")
             //If enPassanting, delete pawn too. (test by "pawn captures behind enPassantable")
         } else {
             throw new InvalidMoveException(String.format("Cannot move %s from row %d, col %d to row %d, col %d.",

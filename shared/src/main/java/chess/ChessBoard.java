@@ -17,6 +17,20 @@ public class ChessBoard {
         layout = new ChessPiece[8][8];
     }
 
+    public ChessBoard(ChessBoard original) {
+        this.layout = new ChessPiece[8][8];
+        for (int row = 0; row <= 7; row++) {
+            for (int col = 0; col <= 7; col++) {
+                ChessPiece originalPiece = original.layout[row][col];
+                if (originalPiece == null) {
+                    this.layout[row][col] = null;
+                } else {
+                    this.layout[row][col] = new ChessPiece(originalPiece);
+                }
+            }
+        }
+    }
+
     /**
      * Adds a chess piece to the chessboard
      *
