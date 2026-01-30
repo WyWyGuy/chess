@@ -406,7 +406,7 @@ public class ChessGame {
                 ChessPosition ijPosition = new ChessPosition(i, j);
                 ChessPiece ijPiece = this.getBoard().getPiece(ijPosition);
                 if (ijPiece == null || ijPiece.getTeamColor() == teamColor) {
-                    return false;
+                    continue;
                 }
                 Collection<ChessMove> ijMoves = ijPiece.pieceMoves(this.getBoard(), ijPosition);
                 for (ChessMove move : ijMoves) {
