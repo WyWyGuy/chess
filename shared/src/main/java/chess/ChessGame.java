@@ -89,10 +89,48 @@ public class ChessGame {
         ChessPiece movingPiece = gameCopy.board.getPiece(move.getStartPosition());
         gameCopy.board.addPiece(move.getEndPosition(), movingPiece);
         gameCopy.board.addPiece(move.getStartPosition(), null);
+        //This logic needs changed to reflect promotions in makeMove
         //remove pawn if en passanting
         //move rook if castling
         return gameCopy.isInCheck(color);
     }
+
+    public Collection<ChessMove> generatePossibleMoves(ChessBoard board, TeamColor color) {
+        ArrayList<ChessMove> possibleMoves = new ArrayList<>();
+        for (int row = 1; row <= 8; row++) {
+            for (int col = 1; col <= 8; col++) {
+                ChessPosition iterPosition = new ChessPosition(row, col);
+                ChessPiece iterPiece = board.getPiece(iterPosition);
+                if ((iterPiece == null) || (iterPiece.getTeamColor() != color)) {
+                    continue;
+                }
+                possibleMoves.addAll(iterPiece.pieceMoves(board, iterPosition));
+            }
+        }
+        //Add castling and en Passant using their functions here!
+        return possibleMoves;
+    }
+
+    //public Collection<ChessMove> addCastling(TeamColor color) {
+        //if king of matching color hasn't moved
+        //AND rook hasn't moved
+        //AND space is open for king to move
+        //AND space is open for rook to move
+        //AND (queenside castling) B is cleared for Rook to pass through
+        //AND king isn't in check
+        //AND middle square isn't in check
+        //AND end square isn't in check
+        //Then add that possible move
+        //return castleMoves. (may be empty)
+    //}
+
+    //public Collection<ChessMove> addEnPassant(TeamColor color) {
+        //if enPassantable exists
+        //AND you have a pawn right next to it
+        //AND the spot behind enPassantable is empty
+        //Then add that possible move (There might be two if you have two pawns sandwiching enPassantable)
+        //return enPassantMoves (may be empty)
+    //}
 
     /**
      * Gets a valid moves for a piece at the given location
@@ -148,8 +186,8 @@ public class ChessGame {
                 this.board.addPiece(move.getEndPosition(), promotedPawn);
             }
             this.board.addPiece(move.getStartPosition(), null);
-            //If castling, move rook too. (test by "king moves two?")
-            //If enPassanting, delete pawn too. (test by "pawn captures behind enPassantable")
+            //If castling, move rook too. (test by "king moves two?" - make a function for this?)
+            //If enPassanting, delete pawn too. (test by "pawn captures behind enPassantable" - make a function for this?)
             this.currentTurn = (this.currentTurn == TeamColor.WHITE ? TeamColor.BLACK : TeamColor.WHITE);
         } else {
             throw new InvalidMoveException(String.format("Cannot move %s from row %d, col %d to row %d, col %d.",
@@ -201,11 +239,12 @@ public class ChessGame {
         if (!this.isInCheck(teamColor)) {
             return false;
         }
-        //Generate all pseudo-moves (and any possible en passants)
-        //Create a fake board for each of them
-        //Perform that move on the fake board
-        //Check if still in check
-        //if not, return false
+        Collection<ChessMove> possibleMoves = generatePossibleMoves(this.board, teamColor);
+        for (ChessMove possibleMove : possibleMoves) {
+            if (!leavesKingInCheck(teamColor, possibleMove)) {
+                return false;
+            }
+        }
         return true;
     }
 
@@ -220,8 +259,12 @@ public class ChessGame {
         if (this.isInCheck(teamColor)) {
             return false;
         }
-        //Generate all valid-moves (includes any valid en passants and castling)
-        //if len(valid-moves > 0) {return false}
+        Collection<ChessMove> possibleMoves = generatePossibleMoves(this.board, teamColor);
+        for (ChessMove possibleMove : possibleMoves) {
+            if (!leavesKingInCheck(teamColor, possibleMove)) {
+                return false;
+            }
+        }
         return true;
     }
 
