@@ -100,16 +100,16 @@ public class ChessGame {
         return gameCopy.isInCheck(color);
     }
 
-    public Collection<ChessMove> generatePossibleMoves(ChessBoard board, TeamColor color) {
+    public Collection<ChessMove> generatePossibleMoves(TeamColor color) {
         ArrayList<ChessMove> possibleMoves = new ArrayList<>();
         for (int row = 1; row <= 8; row++) {
             for (int col = 1; col <= 8; col++) {
                 ChessPosition iterPosition = new ChessPosition(row, col);
-                ChessPiece iterPiece = board.getPiece(iterPosition);
+                ChessPiece iterPiece = this.board.getPiece(iterPosition);
                 if ((iterPiece == null) || (iterPiece.getTeamColor() != color)) {
                     continue;
                 }
-                possibleMoves.addAll(iterPiece.pieceMoves(board, iterPosition));
+                possibleMoves.addAll(iterPiece.pieceMoves(this.board, iterPosition));
             }
         }
         possibleMoves.addAll(addCastling(color));
@@ -121,6 +121,8 @@ public class ChessGame {
         Collection<ChessMove> castleMoves = new ArrayList<ChessMove>();
         if ((this.whiteKingHasMoved == false) && (!isInCheck(color))) {
             if ((color == TeamColor.WHITE) &&
+                (this.getBoard().getPiece(new ChessPosition(1, 5)) != null) &&
+                (this.getBoard().getPiece(new ChessPosition(1, 5)).getPieceType() == ChessPiece.PieceType.KING) &&
                 (this.whiteLeftRookHasMoved == false) &&
                 (this.getBoard().getPiece(new ChessPosition(1, 3)) == null) &&
                 (this.getBoard().getPiece(new ChessPosition(1, 4)) == null) &&
@@ -130,6 +132,8 @@ public class ChessGame {
                     castleMoves.add(new ChessMove(new ChessPosition(1, 5), new ChessPosition(1, 3), null));
             }
             if ((color == TeamColor.WHITE) &&
+                    (this.getBoard().getPiece(new ChessPosition(1, 5)) != null) &&
+                    (this.getBoard().getPiece(new ChessPosition(1, 5)).getPieceType() == ChessPiece.PieceType.KING) &&
                     (this.whiteRightRookHasMoved == false) &&
                     (this.getBoard().getPiece(new ChessPosition(1, 7)) == null) &&
                     (this.getBoard().getPiece(new ChessPosition(1, 6)) == null) &&
@@ -140,6 +144,8 @@ public class ChessGame {
         }
         if ((this.blackKingHasMoved == false) && (!isInCheck(color))) {
             if ((color == TeamColor.BLACK) &&
+                    (this.getBoard().getPiece(new ChessPosition(8, 5)) != null) &&
+                    (this.getBoard().getPiece(new ChessPosition(8, 5)).getPieceType() == ChessPiece.PieceType.KING) &&
                     (this.blackLeftRookHasMoved == false) &&
                     (this.getBoard().getPiece(new ChessPosition(8, 3)) == null) &&
                     (this.getBoard().getPiece(new ChessPosition(8, 4)) == null) &&
@@ -149,6 +155,8 @@ public class ChessGame {
                 castleMoves.add(new ChessMove(new ChessPosition(8, 5), new ChessPosition(8, 3), null));
             }
             if ((color == TeamColor.BLACK) &&
+                    (this.getBoard().getPiece(new ChessPosition(8, 5)) != null) &&
+                    (this.getBoard().getPiece(new ChessPosition(8, 5)).getPieceType() == ChessPiece.PieceType.KING) &&
                     (this.blackRightRookHasMoved == false) &&
                     (this.getBoard().getPiece(new ChessPosition(8, 7)) == null) &&
                     (this.getBoard().getPiece(new ChessPosition(8, 6)) == null) &&
@@ -407,7 +415,7 @@ public class ChessGame {
         if (!this.isInCheck(teamColor)) {
             return false;
         }
-        Collection<ChessMove> possibleMoves = generatePossibleMoves(this.getBoard(), teamColor);
+        Collection<ChessMove> possibleMoves = generatePossibleMoves(teamColor);
         for (ChessMove possibleMove : possibleMoves) {
             if (!leavesKingInCheck(teamColor, possibleMove)) {
                 return false;
@@ -427,7 +435,7 @@ public class ChessGame {
         if (this.isInCheck(teamColor)) {
             return false;
         }
-        Collection<ChessMove> possibleMoves = generatePossibleMoves(this.getBoard(), teamColor);
+        Collection<ChessMove> possibleMoves = generatePossibleMoves(teamColor);
         for (ChessMove possibleMove : possibleMoves) {
             if (!leavesKingInCheck(teamColor, possibleMove)) {
                 return false;
