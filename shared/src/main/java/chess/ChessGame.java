@@ -181,7 +181,8 @@ public class ChessGame {
         if (this.isEnPassantable.getColumn() < 8) {
             rightOfEnPassantable = new ChessPosition(this.isEnPassantable.getRow(), this.isEnPassantable.getColumn() + 1);
         }
-        ChessPosition enPassantEnd = new ChessPosition((color == TeamColor.WHITE ? (this.isEnPassantable.getRow() + 1) : (this.isEnPassantable.getRow() - 1)), this.isEnPassantable.getColumn());
+        ChessPosition enPassantEnd = new ChessPosition((color == TeamColor.WHITE ? (this.isEnPassantable.getRow() + 1) :
+            (this.isEnPassantable.getRow() - 1)), this.isEnPassantable.getColumn());
         if ((leftOfEnPassantable != null) &&
             (this.getBoard().getPiece(leftOfEnPassantable) != null) &&
             (this.getBoard().getPiece(leftOfEnPassantable).getPieceType() == ChessPiece.PieceType.PAWN) &&
@@ -212,7 +213,8 @@ public class ChessGame {
         }
         TeamColor color = movingPiece.getTeamColor();
         if (((color == TeamColor.WHITE && !game.whiteKingHasMoved) || (color == TeamColor.BLACK && !game.blackKingHasMoved)) &&
-            ((Objects.equals(move.getEndPosition(), new ChessPosition((color == TeamColor.WHITE ? 1 : 8), 3))) || (Objects.equals(move.getEndPosition(), new ChessPosition((color == TeamColor.WHITE ? 1 : 8), 7))))) {
+            ((Objects.equals(move.getEndPosition(), new ChessPosition((color == TeamColor.WHITE ? 1 : 8), 3))) ||
+            (Objects.equals(move.getEndPosition(), new ChessPosition((color == TeamColor.WHITE ? 1 : 8), 7))))) {
                 if (color == TeamColor.WHITE) {
                     if (move.getEndPosition().getColumn() == 3) {
                         ChessPiece leftWhiteRook = board.getPiece(new ChessPosition(1, 1));
@@ -270,8 +272,10 @@ public class ChessGame {
             return;
         }
         TeamColor color = movingPiece.getTeamColor();
-        if (((color == TeamColor.WHITE) && (Objects.equals(move.getEndPosition(), new ChessPosition(game.isEnPassantable.getRow() + 1, game.isEnPassantable.getColumn())))) ||
-            ((color == TeamColor.BLACK) && (Objects.equals(move.getEndPosition(), new ChessPosition(game.isEnPassantable.getRow() - 1, game.isEnPassantable.getColumn()))))) {
+        if (((color == TeamColor.WHITE) &&
+            (Objects.equals(move.getEndPosition(), new ChessPosition(game.isEnPassantable.getRow() + 1, game.isEnPassantable.getColumn())))) ||
+            ((color == TeamColor.BLACK) &&
+            (Objects.equals(move.getEndPosition(), new ChessPosition(game.isEnPassantable.getRow() - 1, game.isEnPassantable.getColumn()))))) {
                 board.addPiece(game.isEnPassantable, null);
         }
     }
@@ -297,7 +301,8 @@ public class ChessGame {
             }
             if (this.isEnPassantable != null) {
                 if ((startPosition.getRow() == isEnPassantable.getRow()) &&
-                    ((startPosition.getColumn() == isEnPassantable.getColumn() + 1) || (startPosition.getColumn() == isEnPassantable.getColumn() - 1))) {
+                    ((startPosition.getColumn() == isEnPassantable.getColumn() + 1) ||
+                    (startPosition.getColumn() == isEnPassantable.getColumn() - 1))) {
                         allowedMoves.addAll(addEnPassant(pieceColor));
                 }
             }
@@ -346,17 +351,25 @@ public class ChessGame {
             if ((movingPieceColor == TeamColor.BLACK) && (movingPiece.getPieceType() == ChessPiece.PieceType.KING)) {
                 this.blackKingHasMoved = true;
             }
-            if ((movingPieceColor == TeamColor.WHITE) && (movingPiece.getPieceType() == ChessPiece.PieceType.ROOK) && (Objects.equals(move.getStartPosition(), new ChessPosition(1, 1)))) {
-                this.whiteLeftRookHasMoved = true;
+            if ((movingPieceColor == TeamColor.WHITE) &&
+                (movingPiece.getPieceType() == ChessPiece.PieceType.ROOK) &&
+                (Objects.equals(move.getStartPosition(), new ChessPosition(1, 1)))) {
+                    this.whiteLeftRookHasMoved = true;
             }
-            if ((movingPieceColor == TeamColor.WHITE) && (movingPiece.getPieceType() == ChessPiece.PieceType.ROOK) && (Objects.equals(move.getStartPosition(), new ChessPosition(1, 8)))) {
-                this.whiteRightRookHasMoved = true;
+            if ((movingPieceColor == TeamColor.WHITE) &&
+                (movingPiece.getPieceType() == ChessPiece.PieceType.ROOK) &&
+                (Objects.equals(move.getStartPosition(), new ChessPosition(1, 8)))) {
+                    this.whiteRightRookHasMoved = true;
             }
-            if ((movingPieceColor == TeamColor.BLACK) && (movingPiece.getPieceType() == ChessPiece.PieceType.ROOK) && (Objects.equals(move.getStartPosition(), new ChessPosition(8, 1)))) {
-                this.blackLeftRookHasMoved = true;
+            if ((movingPieceColor == TeamColor.BLACK) &&
+                (movingPiece.getPieceType() == ChessPiece.PieceType.ROOK) &&
+                (Objects.equals(move.getStartPosition(), new ChessPosition(8, 1)))) {
+                    this.blackLeftRookHasMoved = true;
             }
-            if ((movingPieceColor == TeamColor.BLACK) && (movingPiece.getPieceType() == ChessPiece.PieceType.ROOK) && (Objects.equals(move.getStartPosition(), new ChessPosition(8, 8)))) {
-                this.blackRightRookHasMoved = true;
+            if ((movingPieceColor == TeamColor.BLACK) &&
+                (movingPiece.getPieceType() == ChessPiece.PieceType.ROOK) &&
+                (Objects.equals(move.getStartPosition(), new ChessPosition(8, 8)))) {
+                    this.blackRightRookHasMoved = true;
             }
             this.isEnPassantable = null;
             if ((movingPiece.getPieceType() == ChessPiece.PieceType.PAWN) &&
@@ -392,12 +405,13 @@ public class ChessGame {
             for (int j = 1; j <= 8; j++) {
                 ChessPosition ijPosition = new ChessPosition(i, j);
                 ChessPiece ijPiece = this.getBoard().getPiece(ijPosition);
-                if (ijPiece != null && ijPiece.getTeamColor() != teamColor) {
-                    Collection<ChessMove> ijMoves = ijPiece.pieceMoves(this.getBoard(), ijPosition);
-                    for (ChessMove move : ijMoves) {
-                        if (move.getEndPosition().equals(kingPosition)) {
-                            return true;
-                        }
+                if (ijPiece == null || ijPiece.getTeamColor() == teamColor) {
+                    return false;
+                }
+                Collection<ChessMove> ijMoves = ijPiece.pieceMoves(this.getBoard(), ijPosition);
+                for (ChessMove move : ijMoves) {
+                    if (move.getEndPosition().equals(kingPosition)) {
+                        return true;
                     }
                 }
             }
