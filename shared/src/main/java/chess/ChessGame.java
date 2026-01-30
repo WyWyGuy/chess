@@ -88,6 +88,8 @@ public class ChessGame {
     public boolean leavesKingInCheck(TeamColor color, ChessMove move) {
         ChessGame gameCopy = new ChessGame(this);
         ChessPiece movingPiece = gameCopy.getBoard().getPiece(move.getStartPosition());
+        this.castle(gameCopy, move);
+        this.enPassant(gameCopy, move);
         if (move.getPromotionPiece() == null) {
             gameCopy.getBoard().addPiece(move.getEndPosition(), movingPiece);
         } else {
@@ -95,8 +97,6 @@ public class ChessGame {
             gameCopy.getBoard().addPiece(move.getEndPosition(), promotedPawn);
         }
         gameCopy.getBoard().addPiece(move.getStartPosition(), null);
-        this.castle(gameCopy, move);
-        this.enPassant(gameCopy, move);
         return gameCopy.isInCheck(color);
     }
 
@@ -204,7 +204,7 @@ public class ChessGame {
         }
         TeamColor color = movingPiece.getTeamColor();
         if (((color == TeamColor.WHITE && !game.whiteKingHasMoved) || (color == TeamColor.BLACK && !game.blackKingHasMoved)) &&
-            ((Objects.equals(move.getEndPosition(), new ChessPosition(3, (color == TeamColor.WHITE ? 1 : 8)))) || (Objects.equals(move.getEndPosition(), new ChessPosition(7, (color == TeamColor.WHITE ? 1 : 8)))))) {
+            ((Objects.equals(move.getEndPosition(), new ChessPosition((color == TeamColor.WHITE ? 1 : 8), 3))) || (Objects.equals(move.getEndPosition(), new ChessPosition((color == TeamColor.WHITE ? 1 : 8), 7))))) {
                 if (color == TeamColor.WHITE) {
                     if (move.getEndPosition().getColumn() == 3) {
                         ChessPiece leftWhiteRook = board.getPiece(new ChessPosition(1, 1));
@@ -323,6 +323,8 @@ public class ChessGame {
         }
         Collection<ChessMove> validMoves = this.validMoves(move.getStartPosition());
         if (validMoves != null && validMoves.contains(move)) {
+            this.castle(this, move);
+            this.enPassant(this, move);
             if (move.getPromotionPiece() == null) {
                 this.getBoard().addPiece(move.getEndPosition(), movingPiece);
             } else {
@@ -330,8 +332,6 @@ public class ChessGame {
                 this.getBoard().addPiece(move.getEndPosition(), promotedPawn);
             }
             this.getBoard().addPiece(move.getStartPosition(), null);
-            this.castle(this, move);
-            this.enPassant(this, move);
             if ((movingPieceColor == TeamColor.WHITE) && (movingPiece.getPieceType() == ChessPiece.PieceType.KING)) {
                 this.whiteKingHasMoved = true;
             }
@@ -357,7 +357,6 @@ public class ChessGame {
                 this.isEnPassantable = move.getEndPosition();
             }
             this.currentTurn = (this.currentTurn == TeamColor.WHITE ? TeamColor.BLACK : TeamColor.WHITE);
-            System.out.println(this.board); //THIS LINE
         } else {
             throw new InvalidMoveException(String.format("Cannot move %s from row %d, col %d to row %d, col %d.",
                     (movingPiece == null ? null : movingPiece.getPieceType()),
