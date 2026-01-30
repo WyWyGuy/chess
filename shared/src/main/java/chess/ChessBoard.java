@@ -108,4 +108,45 @@ public class ChessBoard {
     public int hashCode() {
         return Arrays.deepHashCode(layout);
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (int row = 7; row >= 0; row--) {
+            for (int col = 0; col <= 7; col++) {
+                ChessPiece iterPiece = this.layout[row][col];
+                if (iterPiece == null) {
+                    sb.append("#");
+                } else {
+                    ChessGame.TeamColor color = iterPiece.getTeamColor();
+                    ChessPiece.PieceType type = iterPiece.getPieceType();
+                    switch (type) {
+                        case KING:
+                            sb.append(color == ChessGame.TeamColor.WHITE ? "K" : "k");
+                            break;
+                        case QUEEN:
+                            sb.append(color == ChessGame.TeamColor.WHITE ? "Q" : "q");
+                            break;
+                        case ROOK:
+                            sb.append(color == ChessGame.TeamColor.WHITE ? "R" : "r");
+                            break;
+                        case KNIGHT:
+                            sb.append(color == ChessGame.TeamColor.WHITE ? "N" : "n");
+                            break;
+                        case BISHOP:
+                            sb.append(color == ChessGame.TeamColor.WHITE ? "B" : "b");
+                            break;
+                        case PAWN:
+                            sb.append(color == ChessGame.TeamColor.WHITE ? "P" : "p");
+                            break;
+                    }
+                }
+                if (col < 7) {
+                    sb.append("  ");
+                }
+            }
+            sb.append("\n");
+        }
+        return sb.toString();
+    }
 }
