@@ -57,7 +57,6 @@ public class ChessGame {
 
     /**
      * Set's which teams turn it is
-     *
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
@@ -237,7 +236,8 @@ public class ChessGame {
                         ChessPiece rightBlackRook = board.getPiece(new ChessPosition(8, 8));
                         board.addPiece((new ChessPosition(8, 6)), rightBlackRook);
                         board.addPiece((new ChessPosition(8, 8)), null);
-                    }                }
+                    }
+                }
         }
         if (color == TeamColor.WHITE) {
             game.whiteKingHasMoved = true;
@@ -282,10 +282,8 @@ public class ChessGame {
 
     /**
      * Gets a valid moves for a piece at the given location
-     *
      * @param startPosition the piece to get valid moves for
-     * @return Set of valid moves for requested piece, or null if no piece at
-     * startPosition
+     * @return Set of valid moves for requested piece, or null if no piece at startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece pieceThere = this.getBoard().getPiece(startPosition);
@@ -317,7 +315,6 @@ public class ChessGame {
 
     /**
      * Makes a move in a chess game
-     *
      * @param move chess move to perform
      * @throws InvalidMoveException if move is invalid
      */
@@ -390,7 +387,6 @@ public class ChessGame {
 
     /**
      * Determines if the given team is in check
-     *
      * @param teamColor which team to check for check
      * @return True if the specified team is in check
      */
@@ -421,7 +417,6 @@ public class ChessGame {
 
     /**
      * Determines if the given team is in checkmate
-     *
      * @param teamColor which team to check for checkmate
      * @return True if the specified team is in checkmate
      */
@@ -439,9 +434,7 @@ public class ChessGame {
     }
 
     /**
-     * Determines if the given team is in stalemate, which here is defined as having
-     * no valid moves while not in check.
-     *
+     * Determines if the given team is in stalemate, which here is defined as having no valid moves while not in check.
      * @param teamColor which team to check for stalemate
      * @return True if the specified team is in stalemate, otherwise false
      */
@@ -460,7 +453,6 @@ public class ChessGame {
 
     /**
      * Sets this game's chessboard with a given board
-     *
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
@@ -469,7 +461,6 @@ public class ChessGame {
 
     /**
      * Gets the current chessboard
-     *
      * @return the chessboard
      */
     public ChessBoard getBoard() {
