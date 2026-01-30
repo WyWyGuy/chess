@@ -128,12 +128,29 @@ public class ChessGame {
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
         ChessPiece movingPiece = this.board.getPiece(move.getStartPosition());
+        if (movingPiece == null) {
+            throw new InvalidMoveException(String.format("No piece found at row %d, col %d.",
+                    move.getStartPosition().getRow(),
+                    move.getStartPosition().getColumn()));
+        }
+        TeamColor movingPieceColor = movingPiece.getTeamColor();
+        if (movingPieceColor != this.currentTurn) {
+            throw new InvalidMoveException(String.format("%s cannot play on %s's turn.",
+                    movingPieceColor,
+                    this.currentTurn));
+        }
         Collection<ChessMove> validMoves = this.validMoves(move.getStartPosition());
         if (validMoves != null && validMoves.contains(move)) {
-            this.board.addPiece(move.getEndPosition(), movingPiece);
+            if (move.getPromotionPiece() == null) {
+                this.board.addPiece(move.getEndPosition(), movingPiece);
+            } else {
+                ChessPiece promotedPawn = new ChessPiece(movingPieceColor, move.getPromotionPiece());
+                this.board.addPiece(move.getEndPosition(), promotedPawn);
+            }
             this.board.addPiece(move.getStartPosition(), null);
             //If castling, move rook too. (test by "king moves two?")
             //If enPassanting, delete pawn too. (test by "pawn captures behind enPassantable")
+            this.currentTurn = (this.currentTurn == TeamColor.WHITE ? TeamColor.BLACK : TeamColor.WHITE);
         } else {
             throw new InvalidMoveException(String.format("Cannot move %s from row %d, col %d to row %d, col %d.",
                     (movingPiece == null ? null : movingPiece.getPieceType()),
