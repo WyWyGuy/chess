@@ -2,9 +2,19 @@ import server.Server;
 
 public class Main {
     public static void main(String[] args) {
-        Server server = new Server();
-        server.run(8080);
+        int port = 8080;
 
-        System.out.println("♕ 240 Chess Server");
+        if (args.length > 0) {
+            try {
+                port = Integer.parseInt(args[0]);
+            } catch (Exception e) {
+                /* use default */
+            }
+        }
+
+        Server server = new Server();
+        server.run(port);
+
+        System.out.println("♕ 240 Chess Server running on port " + port);
     }
 }
