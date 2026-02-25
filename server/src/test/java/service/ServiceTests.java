@@ -58,7 +58,25 @@ public class ServiceTests {
                 });
     }
 
+    @Test
+    void successfulLogout() throws DataAccessException {
+        var userService = new UserService();
+        var authService = new AuthService();
+        RegisterResult registerResult = userService.register(new RegisterRequest("Scooby-doo", "ruhRuh*600", "food@mystery.inc"));
+        authService.logout(registerResult.authToken());
+    }
+
+    @Test
+    void failedLogoutNotLoggedIn() throws DataAccessException {
+        var authService = new AuthService();
+        Assertions.assertThrows(DataAccessException.class,
+                () -> {
+                    authService.logout("11111111-00000000000-99999999999");
+                });
+    }
+
 /*
+    // Code for how to write tests from the slides
     @Test
     void successfulLogin() {
         var authService = AuthorizationService.getInstance();

@@ -14,4 +14,6 @@ public interface AuthDAO {
 
     void createAuth(AuthData auth) throws DataAccessException;
 
+    void deleteAuth(String authToken) throws DataAccessException;
+
 }

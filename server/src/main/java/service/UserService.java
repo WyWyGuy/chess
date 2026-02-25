@@ -20,7 +20,7 @@ public class UserService {
             throw new DataAccessException(request.username() + " already exists, cannot create new user.");
         }
         userDAO.createUser(new UserData(request.username(), request.password(), request.email()));
-        AuthData auth = new AuthData(request.username(), UUID.randomUUID().toString());
+        AuthData auth = new AuthData(UUID.randomUUID().toString(), request.username());
         authDAO.createAuth(auth);
         return new RegisterResult(request.username(), auth.authToken());
     }

@@ -16,6 +16,7 @@ public class Server {
         javalin.delete("/db", this::clearHandler);
         javalin.post("/user", this::registerHandler);
         javalin.post("/session", this::loginHandler);
+        javalin.delete("/session", this::logoutHandler);
     }
 
     public int run(int desiredPort) {
@@ -89,6 +90,26 @@ public class Server {
             LoginResult loginResult = authService.login(loginRequest);
             ctx.status(200);
             ctx.result(gson.toJson(loginResult));
+        } catch (DataAccessException e) {
+            ctx.status(401);
+            ctx.result(gson.toJson(new Message("Error: unauthorized")));
+        } catch (Exception e) {
+            ctx.status(500);
+            ctx.result(gson.toJson(new Message("Error: " + e.getMessage())));
+        }
+    }
+
+    public void logoutHandler(Context ctx) {
+        AuthService authService = new AuthService();
+        String authToken = ctx.header("Authorization");
+        if (authToken == null) {
+            ctx.status(401);
+            ctx.result(gson.toJson(new Message("Error: unauthorized")));
+        }
+        try {
+            authService.logout(authToken);
+            ctx.status(200);
+            ctx.result(gson.toJson(new Object()));
         } catch (DataAccessException e) {
             ctx.status(401);
             ctx.result(gson.toJson(new Message("Error: unauthorized")));

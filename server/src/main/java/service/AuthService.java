@@ -27,4 +27,11 @@ public class AuthService {
         return new LoginResult(request.username(), auth.authToken());
     }
 
+    public void logout(String authToken) throws DataAccessException {
+        if (!authDAO.authExists(authToken)) {
+            throw new DataAccessException("Auth token does not exist");
+        }
+        authDAO.deleteAuth(authToken);
+    }
+
 }
