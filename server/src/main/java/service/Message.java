@@ -1,6 +1,6 @@
 package service;
 
-public record ClearResponse(
+public record Message(
         String message
 ) {
 }

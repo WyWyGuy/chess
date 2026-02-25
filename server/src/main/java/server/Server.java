@@ -4,10 +4,7 @@ import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import io.javalin.*;
 import io.javalin.http.Context;
-import service.ClearResponse;
-import service.ClearService;
-
-import java.util.Map;
+import service.*;
 
 public class Server {
 
@@ -16,7 +13,8 @@ public class Server {
 
     public Server() {
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
-        javalin.delete("/db", ctx -> clearHandler(ctx));
+        javalin.delete("/db", this::clearHandler);
+        javalin.post("/user", this::registerHandler);
     }
 
     public int run(int desiredPort) {
@@ -34,9 +32,39 @@ public class Server {
             clearService.clear();
             ctx.status(200);
             ctx.result(gson.toJson(new Object()));
-        } catch (DataAccessException e) {
+        } catch (Exception e) {
             ctx.status(500);
-            ctx.result(gson.toJson(new ClearResponse("Error: " + e.getMessage())));
+            ctx.result(gson.toJson(new Message("Error: " + e.getMessage())));
+        }
+    }
+
+    private void registerHandler(Context ctx) {
+        UserService userService = new UserService();
+        RegisterRequest registerRequest = null;
+        try {
+            registerRequest = gson.fromJson(ctx.body(), RegisterRequest.class);
+        } catch (Exception e) {
+            ctx.status(400);
+            ctx.result(gson.toJson(new Message("Error: bad request")));
+            return;
+        }
+        if (registerRequest.username() == null ||
+                registerRequest.password() == null ||
+                registerRequest.email() == null) {
+            ctx.status(400);
+            ctx.result(gson.toJson(new Message("Error: bad request")));
+            return;
+        }
+        try {
+            RegisterResult registerResult = userService.register(registerRequest);
+            ctx.status(200);
+            ctx.result(gson.toJson(registerResult));
+        } catch (DataAccessException e) {
+            ctx.status(403);
+            ctx.result(gson.toJson(new Message("Error: already taken")));
+        } catch (Exception e) {
+            ctx.status(500);
+            ctx.result(gson.toJson(new Message("Error: " + e.getMessage())));
         }
     }
 }

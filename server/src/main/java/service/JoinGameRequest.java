@@ -1,4 +1,6 @@
 package service;
 
-public class JoinGameRequest {
+public record JoinGameRequest(
+        
+) {
 }
