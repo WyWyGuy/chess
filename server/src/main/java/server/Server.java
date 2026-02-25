@@ -15,6 +15,7 @@ public class Server {
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
         javalin.delete("/db", this::clearHandler);
         javalin.post("/user", this::registerHandler);
+        javalin.post("/session", this::loginHandler);
     }
 
     public int run(int desiredPort) {
@@ -40,7 +41,7 @@ public class Server {
 
     private void registerHandler(Context ctx) {
         UserService userService = new UserService();
-        RegisterRequest registerRequest = null;
+        RegisterRequest registerRequest;
         try {
             registerRequest = gson.fromJson(ctx.body(), RegisterRequest.class);
         } catch (Exception e) {
@@ -62,6 +63,35 @@ public class Server {
         } catch (DataAccessException e) {
             ctx.status(403);
             ctx.result(gson.toJson(new Message("Error: already taken")));
+        } catch (Exception e) {
+            ctx.status(500);
+            ctx.result(gson.toJson(new Message("Error: " + e.getMessage())));
+        }
+    }
+
+    public void loginHandler(Context ctx) {
+        AuthService authService = new AuthService();
+        LoginRequest loginRequest;
+        try {
+            loginRequest = gson.fromJson(ctx.body(), LoginRequest.class);
+        } catch (Exception e) {
+            ctx.status(400);
+            ctx.result(gson.toJson(new Message("Error: bad request")));
+            return;
+        }
+        if (loginRequest.username() == null ||
+                loginRequest.password() == null) {
+            ctx.status(400);
+            ctx.result(gson.toJson(new Message("Error: bad request")));
+            return;
+        }
+        try {
+            LoginResult loginResult = authService.login(loginRequest);
+            ctx.status(200);
+            ctx.result(gson.toJson(loginResult));
+        } catch (DataAccessException e) {
+            ctx.status(401);
+            ctx.result(gson.toJson(new Message("Error: unauthorized")));
         } catch (Exception e) {
             ctx.status(500);
             ctx.result(gson.toJson(new Message("Error: " + e.getMessage())));

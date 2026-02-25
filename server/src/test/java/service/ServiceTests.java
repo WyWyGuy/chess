@@ -35,6 +35,29 @@ public class ServiceTests {
                 });
     }
 
+    @Test
+    void successfulLogin() throws DataAccessException {
+        var userService = new UserService();
+        var authService = new AuthService();
+        RegisterResult registerResult = userService.register(new RegisterRequest("John", "#1baptist", "john@12apostles.cel"));
+        LoginResult loginResult = authService.login(new LoginRequest("John", "#1baptist"));
+        Assertions.assertNotNull(loginResult.authToken());
+        Assertions.assertEquals("John", loginResult.username());
+    }
+
+    @Test
+    void failedLoginWrongPassword() throws DataAccessException {
+        var userService = new UserService();
+        var authService = new AuthService();
+        RegisterResult registerResult = userService.register(new RegisterRequest("Charles", "stinkingBishop500", "cheddarchesse@gmail.com"));
+        Assertions.assertThrows(DataAccessException.class,
+                () -> {
+                    authService.login(
+                            new LoginRequest("Charles", "chessnuts1019")
+                    );
+                });
+    }
+
 /*
     @Test
     void successfulLogin() {
