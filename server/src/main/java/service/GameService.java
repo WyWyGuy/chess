@@ -20,8 +20,8 @@ public class GameService {
             throw new DataAccessException("Auth token does not exist");
         }
         ChessGame game = new ChessGame();
-        int ID = gameDAO.createGame(new GameData(0, null, null, request.gameName(), game));
-        return new CreateGameResult(ID);
+        int id = gameDAO.createGame(new GameData(0, null, null, request.gameName(), game));
+        return new CreateGameResult(id);
     }
 
     public ListGamesResult listGames(String authToken) throws DataAccessException {

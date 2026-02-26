@@ -22,8 +22,8 @@ public class MemoryGameDAO implements GameDAO {
     }
 
     @Override
-    public boolean gameExists(int ID) throws DataAccessException {
-        return this.games.containsKey(ID);
+    public boolean gameExists(int id) throws DataAccessException {
+        return this.games.containsKey(id);
     }
 
     public int createGame(GameData gameInfo) throws DataAccessException {
@@ -45,31 +45,31 @@ public class MemoryGameDAO implements GameDAO {
     }
 
     @Override
-    public void updateWhitePlayer(int ID, String player) throws DataAccessException {
-        if (!gameExists(ID)) {
-            throw new DataAccessException("Game " + ID + " does not exist, cannot update white player");
+    public void updateWhitePlayer(int id, String player) throws DataAccessException {
+        if (!gameExists(id)) {
+            throw new DataAccessException("Game " + id + " does not exist, cannot update white player");
         }
-        GameData game = this.games.get(ID);
+        GameData game = this.games.get(id);
         GameData updatedGame = new GameData(game.gameID(), player, game.blackUsername(), game.gameName(), game.game());
         this.games.put(game.gameID(), updatedGame);
     }
 
     @Override
-    public void updateBlackPlayer(int ID, String player) throws DataAccessException {
-        if (!gameExists(ID)) {
-            throw new DataAccessException("Game " + ID + " does not exist, cannot update black player");
+    public void updateBlackPlayer(int id, String player) throws DataAccessException {
+        if (!gameExists(id)) {
+            throw new DataAccessException("Game " + id + " does not exist, cannot update black player");
         }
-        GameData game = this.games.get(ID);
+        GameData game = this.games.get(id);
         GameData updatedGame = new GameData(game.gameID(), game.whiteUsername(), player, game.gameName(), game.game());
         this.games.put(game.gameID(), updatedGame);
     }
 
     @Override
-    public GameData getGame(int ID) throws DataAccessException {
-        if (!gameExists(ID)) {
-            throw new DataAccessException("Game " + ID + " does not exist");
+    public GameData getGame(int id) throws DataAccessException {
+        if (!gameExists(id)) {
+            throw new DataAccessException("Game " + id + " does not exist");
         }
-        return this.games.get(ID);
+        return this.games.get(id);
     }
 
 }
