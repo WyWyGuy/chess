@@ -92,5 +92,25 @@ public class ServiceTests {
                     gameService.createGame(new CreateGameRequest("Checkers"), "0");
                 });
     }
-    
+
+    @Test
+    void successfulListGames() throws DataAccessException {
+        var userService = new UserService();
+        var gameService = new GameService();
+        RegisterResult registerResult = userService.register(new RegisterRequest("Steven", "theCakeIsALie", "Jumpman@mushroomKingdom"));
+        CreateGameResult createGameResult = gameService.createGame(new CreateGameRequest("Ready Player 1"), registerResult.authToken());
+        ListGamesResult listGamesResult = gameService.listGames(registerResult.authToken());
+        boolean found = listGamesResult.games().stream().anyMatch(game -> game.gameName().equals("Ready Player 1"));
+        Assertions.assertTrue(found);
+    }
+
+    @Test
+    void failedListGamesUnauthorized() throws DataAccessException {
+        var gameService = new GameService();
+        Assertions.assertThrows(DataAccessException.class,
+                () -> {
+                    gameService.listGames("0");
+                });
+    }
+
 }

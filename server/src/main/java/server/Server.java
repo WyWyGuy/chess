@@ -7,6 +7,8 @@ import io.javalin.http.Context;
 import org.eclipse.jetty.server.Authentication;
 import service.*;
 
+import javax.xml.crypto.Data;
+
 public class Server {
 
     private final Javalin javalin;
@@ -24,6 +26,7 @@ public class Server {
         javalin.post("/session", this::loginHandler);
         javalin.delete("/session", this::logoutHandler);
         javalin.post("/game", this::createGameHandler);
+        javalin.get("/game", this::listGamesHandler);
     }
 
     public int run(int desiredPort) {
@@ -145,6 +148,25 @@ public class Server {
             CreateGameResult createGameResult = gameService.createGame(createGameRequest, authToken);
             ctx.status(200);
             ctx.result(gson.toJson(createGameResult));
+        } catch (DataAccessException e) {
+            ctx.status(401);
+            ctx.result(gson.toJson(new Message("Error: unauthorized")));
+        } catch (Exception e) {
+            ctx.status(500);
+            ctx.result(gson.toJson(new Message("Error: " + e.getMessage())));
+        }
+    }
+
+    public void listGamesHandler(Context ctx) {
+        String authToken = ctx.header("Authorization");
+        if (authToken == null) {
+            ctx.status(401);
+            ctx.result(gson.toJson(new Message("Error: unauthorized")));
+        }
+        try {
+            ListGamesResult listGamesResult = gameService.listGames(authToken);
+            ctx.status(200);
+            ctx.result(gson.toJson(listGamesResult));
         } catch (DataAccessException e) {
             ctx.status(401);
             ctx.result(gson.toJson(new Message("Error: unauthorized")));
