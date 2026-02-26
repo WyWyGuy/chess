@@ -1,10 +1,12 @@
 package service;
 
+import chess.ChessGame;
 import dataaccess.DataAccessException;
 import org.eclipse.jetty.server.Authentication;
 import org.junit.jupiter.api.*;
 
 import javax.xml.crypto.Data;
+import java.util.List;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ServiceTests {
@@ -110,6 +112,34 @@ public class ServiceTests {
         Assertions.assertThrows(DataAccessException.class,
                 () -> {
                     gameService.listGames("0");
+                });
+    }
+
+    @Test
+    void successfulJoinGame() throws DataAccessException {
+        ClearService clearService = new ClearService();
+        clearService.clear();
+        var userService = new UserService();
+        var gameService = new GameService();
+        RegisterResult registerResult = userService.register(new RegisterRequest("Your Mom", "lol", "your@mom"));
+        CreateGameResult createGameResult = gameService.createGame(new CreateGameRequest("Your mom's house"), registerResult.authToken());
+        gameService.joinGame(new JoinGameRequest(ChessGame.TeamColor.WHITE, createGameResult.gameID()), registerResult.authToken());
+        ListGamesResult listGamesResult = gameService.listGames(registerResult.authToken());
+        boolean found = listGamesResult.games().stream().anyMatch(game -> game.whiteUsername().equals("Your Mom"));
+        Assertions.assertTrue(found);
+    }
+
+    @Test
+    void failedJoinGameAlreadyTaken() throws DataAccessException {
+        var userService = new UserService();
+        var gameService = new GameService();
+        RegisterResult registerResult1 = userService.register(new RegisterRequest("Guy 1", "secretTunnel", "guy1@gmail.com"));
+        RegisterResult registerResult2 = userService.register(new RegisterRequest("Guy 2", "password", "guy2@gmail.com"));
+        CreateGameResult createGameResult = gameService.createGame(new CreateGameRequest("Guy Game"), registerResult1.authToken());
+        gameService.joinGame(new JoinGameRequest(ChessGame.TeamColor.BLACK, createGameResult.gameID()), registerResult2.authToken());
+        Assertions.assertThrows(DataAccessException.class,
+                () -> {
+                    gameService.joinGame(new JoinGameRequest(ChessGame.TeamColor.BLACK, createGameResult.gameID()), registerResult1.authToken());
                 });
     }
 

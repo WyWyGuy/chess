@@ -8,6 +8,10 @@ import org.eclipse.jetty.server.Authentication;
 import service.*;
 
 import javax.xml.crypto.Data;
+import java.util.Objects;
+
+import static chess.ChessGame.TeamColor.BLACK;
+import static chess.ChessGame.TeamColor.WHITE;
 
 public class Server {
 
@@ -27,6 +31,7 @@ public class Server {
         javalin.delete("/session", this::logoutHandler);
         javalin.post("/game", this::createGameHandler);
         javalin.get("/game", this::listGamesHandler);
+        javalin.put("/game", this::joinGameHandler);
     }
 
     public int run(int desiredPort) {
@@ -170,6 +175,48 @@ public class Server {
         } catch (DataAccessException e) {
             ctx.status(401);
             ctx.result(gson.toJson(new Message("Error: unauthorized")));
+        } catch (Exception e) {
+            ctx.status(500);
+            ctx.result(gson.toJson(new Message("Error: " + e.getMessage())));
+        }
+    }
+
+    public void joinGameHandler(Context ctx) {
+        JoinGameRequest joinGameRequest;
+        String authToken = ctx.header("Authorization");
+        if (authToken == null) {
+            ctx.status(401);
+            ctx.result(gson.toJson(new Message("Error: unauthorized")));
+        }
+        try {
+            joinGameRequest = gson.fromJson(ctx.body(), JoinGameRequest.class);
+        } catch (Exception e) {
+            ctx.status(400);
+            ctx.result(gson.toJson(new Message("Error: bad request")));
+            return;
+        }
+        if ((joinGameRequest.playerColor() == null) ||
+                joinGameRequest.gameID() <= 0) {
+            ctx.status(400);
+            ctx.result(gson.toJson(new Message("Error: bad request")));
+            return;
+        }
+        try {
+            gameService.joinGame(joinGameRequest, authToken);
+            ctx.status(200);
+            ctx.result(gson.toJson(new Object()));
+        } catch (DataAccessException e) {
+            System.out.println(e.getMessage());
+            if (e.getMessage().contains("already taken")) {
+                ctx.status(403);
+                ctx.result(gson.toJson(new Message("Error: already taken")));
+            } else if (e.getMessage().contains("Auth token does not exist")) {
+                ctx.status(401);
+                ctx.result(gson.toJson(new Message("Error: unauthorized")));
+            } else {
+                ctx.status(400);
+                ctx.result(gson.toJson(new Message("Error: bad request")));
+            }
         } catch (Exception e) {
             ctx.status(500);
             ctx.result(gson.toJson(new Message("Error: " + e.getMessage())));
