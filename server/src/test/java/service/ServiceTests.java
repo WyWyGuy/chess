@@ -75,27 +75,22 @@ public class ServiceTests {
                 });
     }
 
-/*
-    // Code for how to write tests from the slides
     @Test
-    void successfulLogin() {
-        var authService = AuthorizationService.getInstance();
-        var registerRequest = new RegisterRequest("name", "password", "email");
-        LoginResponse registerResponse = authService.register(registerRequest);
-
-        var loginRequest = new LoginRequest("name", "password");
-        LoginResponse loginResponse = authService.login(loginRequest);
-
-        Assertions.assertTrue(loginResponse.message() == null || loginResponse.message().equals(""));
-        Assertions.assertEquals("name", loginResponse.username());
-        Assertions.assertFalse(loginResponse.authToken() == null || loginResponse.authToken().equals(???));
+    void successfulCreateGame() throws DataAccessException {
+        var userService = new UserService();
+        var gameService = new GameService();
+        RegisterResult registerResult = userService.register(new RegisterRequest("Levi", "Levi", "Levi@Levi.com"));
+        CreateGameResult createGameResult = gameService.createGame(new CreateGameRequest("Super Levi Galaxy"), registerResult.authToken());
+        Assertions.assertInstanceOf(Integer.class, createGameResult.gameID());
     }
 
     @Test
-    void failedLogin() {
-        var loginService = AuthorizationService.getInstance();
-        var loginRequest = new LoginRequest("name", "password");
-        Assertions.assertThrows(???);
+    void failedCreateGameUnauthorized() throws DataAccessException {
+        var gameService = new GameService();
+        Assertions.assertThrows(DataAccessException.class,
+                () -> {
+                    gameService.createGame(new CreateGameRequest("Checkers"), "0");
+                });
     }
-*/
+    
 }
