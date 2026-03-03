@@ -1,6 +1,7 @@
 package dataaccess;
 
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 
 import javax.xml.crypto.Data;
 import java.sql.Connection;
@@ -38,10 +39,13 @@ public class DatabaseUserDAO implements UserDAO {
              PreparedStatement stmt = conn.prepareStatement("SELECT * FROM users WHERE username = ?")) {
             stmt.setString(1, username);
             ResultSet rs = stmt.executeQuery();
-            String col1 = rs.getString("username");
-            String col2 = rs.getString("password");
-            String col3 = rs.getString("email");
-            return new UserData(col1, col2, col3);
+            if (rs.next()) {
+                String col1 = rs.getString("username");
+                String col2 = rs.getString("password");
+                String col3 = rs.getString("email");
+                return new UserData(col1, col2, col3);
+            }
+            throw new DataAccessException("Could not find user " + username);
         } catch (SQLException e) {
             throw new DataAccessException("Could not return user " + username);
         }
@@ -49,7 +53,15 @@ public class DatabaseUserDAO implements UserDAO {
 
     @Override
     public void createUser(UserData user) throws DataAccessException {
-
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement("INSERT INTO users (username, password, email) VALUES (?, ?, ?)")) {
+            stmt.setString(1, user.username());
+            stmt.setString(2, BCrypt.hashpw(user.password(), BCrypt.gensalt()));
+            stmt.setString(3, user.email());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new DataAccessException("Could not create user " + user.username());
+        }
     }
 
 }
