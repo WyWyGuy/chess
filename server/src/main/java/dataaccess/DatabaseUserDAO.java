@@ -2,8 +2,10 @@ package dataaccess;
 
 import model.UserData;
 
+import javax.xml.crypto.Data;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class DatabaseUserDAO implements UserDAO {
@@ -20,7 +22,14 @@ public class DatabaseUserDAO implements UserDAO {
 
     @Override
     public boolean userExists(String username) throws DataAccessException {
-        throw new DataAccessException("Not implemented");
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM users WHERE username = ?")) {
+            stmt.setString(1, username);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            throw new DataAccessException("Could not determine if user exists");
+        }
     }
 
     @Override
