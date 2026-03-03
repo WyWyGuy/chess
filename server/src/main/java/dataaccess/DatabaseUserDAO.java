@@ -16,7 +16,7 @@ public class DatabaseUserDAO implements UserDAO {
              PreparedStatement stmt = conn.prepareStatement("DELETE FROM users")) {
             stmt.executeUpdate();
         } catch (SQLException e) {
-            throw new DataAccessException("Could not clear the database");
+            throw new DataAccessException("Could not clear the user database");
         }
     }
 
@@ -28,13 +28,23 @@ public class DatabaseUserDAO implements UserDAO {
             ResultSet rs = stmt.executeQuery();
             return rs.next();
         } catch (SQLException e) {
-            throw new DataAccessException("Could not determine if user exists");
+            throw new DataAccessException("Could not determine if " + username + " exists");
         }
     }
 
     @Override
     public UserData getUser(String username) throws DataAccessException {
-        throw new DataAccessException("Not implemented");
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM users WHERE username = ?")) {
+            stmt.setString(1, username);
+            ResultSet rs = stmt.executeQuery();
+            String col1 = rs.getString("username");
+            String col2 = rs.getString("password");
+            String col3 = rs.getString("email");
+            return new UserData(col1, col2, col3);
+        } catch (SQLException e) {
+            throw new DataAccessException("Could not return user " + username);
+        }
     }
 
     @Override

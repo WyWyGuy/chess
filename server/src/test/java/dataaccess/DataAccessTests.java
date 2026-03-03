@@ -6,6 +6,7 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import service.ClearService;
+import service.RegisterRequest;
 
 import javax.xml.crypto.Data;
 import java.sql.SQLException;
@@ -31,6 +32,23 @@ public class DataAccessTests {
     @Test
     void successfulUserDoesntExist() throws DataAccessException {
         Assertions.assertFalse(userDAO.userExists("IwasNeverBorn"));
+    }
+
+    @Test
+    void successfulGetUser() throws DataAccessException {
+        userDAO.createUser(new UserData("hello", "world", "hw@helloworld.com"));
+        UserData returned = userDAO.getUser("hello");
+        Assertions.assertEquals("hello", returned.username());
+        Assertions.assertNotNull(returned.password());
+        Assertions.assertEquals("hw@helloworld.com", returned.email());
+    }
+
+    @Test
+    void failedGetUserDoesNotExist() throws DataAccessException {
+        Assertions.assertThrows(DataAccessException.class,
+                () -> {
+                    userDAO.getUser("IalsoWasNeverBorn");
+                });
     }
 
 }
