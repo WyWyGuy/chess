@@ -2,6 +2,7 @@ package server;
 
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
+import dataaccess.DatabaseManager;
 import io.javalin.*;
 import io.javalin.http.Context;
 import org.eclipse.jetty.server.Authentication;
@@ -35,8 +36,14 @@ public class Server {
     }
 
     public int run(int desiredPort) {
-        javalin.start(desiredPort);
-        return javalin.port();
+        try {
+            DatabaseManager.createDatabase();
+            javalin.start(desiredPort);
+            return javalin.port();
+        } catch (Exception e) {
+            System.out.println("Failed to initialize the server!");
+            return -1;
+        }
     }
 
     public void stop() {

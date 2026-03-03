@@ -1,8 +1,6 @@
 package service;
 
-import dataaccess.DataAccessException;
-import dataaccess.MemoryAuthDAO;
-import dataaccess.MemoryUserDAO;
+import dataaccess.*;
 import model.AuthData;
 import model.UserData;
 import org.eclipse.jetty.server.Authentication;
@@ -12,8 +10,8 @@ import java.util.UUID;
 
 public class UserService {
 
-    private MemoryAuthDAO authDAO = new MemoryAuthDAO();
-    private MemoryUserDAO userDAO = new MemoryUserDAO();
+    private DatabaseAuthDAO authDAO = new DatabaseAuthDAO();
+    private DatabaseUserDAO userDAO = new DatabaseUserDAO();
 
     public RegisterResult register(RegisterRequest request) throws DataAccessException {
         if (userDAO.userExists(request.username())) {

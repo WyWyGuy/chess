@@ -1,9 +1,7 @@
 package service;
 
 import chess.ChessGame;
-import dataaccess.DataAccessException;
-import dataaccess.MemoryAuthDAO;
-import dataaccess.MemoryGameDAO;
+import dataaccess.*;
 import model.AuthData;
 import model.GameData;
 
@@ -12,8 +10,8 @@ import java.util.Objects;
 
 public class GameService {
 
-    private MemoryGameDAO gameDAO = new MemoryGameDAO();
-    private MemoryAuthDAO authDAO = new MemoryAuthDAO();
+    private DatabaseGameDAO gameDAO = new DatabaseGameDAO();
+    private DatabaseAuthDAO authDAO = new DatabaseAuthDAO();
 
     public CreateGameResult createGame(CreateGameRequest request, String authToken) throws DataAccessException {
         if (!authDAO.authExists(authToken)) {

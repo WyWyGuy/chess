@@ -1,8 +1,6 @@
 package service;
 
-import dataaccess.DataAccessException;
-import dataaccess.MemoryAuthDAO;
-import dataaccess.MemoryUserDAO;
+import dataaccess.*;
 import model.AuthData;
 import model.UserData;
 
@@ -11,8 +9,8 @@ import java.util.UUID;
 
 public class AuthService {
 
-    private MemoryAuthDAO authDAO = new MemoryAuthDAO();
-    private MemoryUserDAO userDAO = new MemoryUserDAO();
+    private DatabaseAuthDAO authDAO = new DatabaseAuthDAO();
+    private DatabaseUserDAO userDAO = new DatabaseUserDAO();
 
     public LoginResult login(LoginRequest request) throws DataAccessException {
         if (!userDAO.userExists(request.username())) {
