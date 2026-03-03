@@ -48,7 +48,7 @@ public class DatabaseManager {
                     "gameName VARCHAR(128) NOT NULL, " +
                     "game JSON NOT NULL," +
                     "FOREIGN KEY (whiteUsername) REFERENCES users(username) ON DELETE SET NULL," +
-                    "FOREIGN KEY (blackUsername) REFERENES users(username) ON DELETE SET NULL)")) {
+                    "FOREIGN KEY (blackUsername) REFERENCES users(username) ON DELETE SET NULL)")) {
                 stmt.executeUpdate();
             }
         } catch (SQLException ex) {

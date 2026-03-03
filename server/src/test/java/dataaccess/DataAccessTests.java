@@ -17,7 +17,7 @@ public class DataAccessTests {
 
     @Test
     void successfulUserClear() throws DataAccessException {
-        
+        userDAO.clear();
     }
 
 }
