@@ -4,6 +4,7 @@ import model.GameData;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 
@@ -21,7 +22,14 @@ public class DatabaseGameDAO implements GameDAO {
 
     @Override
     public boolean gameExists(int id) throws DataAccessException {
-        throw new DataAccessException("Not implemented");
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM games WHERE gameID = ?")) {
+            stmt.setString(1, String.valueOf(id));
+            ResultSet rs = stmt.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            throw new DataAccessException("Could not determine if game " + id + " exists");
+        }
     }
 
     @Override

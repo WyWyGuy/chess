@@ -1,6 +1,8 @@
 package dataaccess;
 
+import chess.ChessGame;
 import model.AuthData;
+import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.*;
 import service.ClearService;
@@ -143,6 +145,17 @@ public class DataAccessTests {
     @Test
     void successfulGameClear() throws DataAccessException {
         gameDAO.clear();
+    }
+
+    @Test
+    void successfulGameExists() throws DataAccessException {
+        gameDAO.createGame(new GameData(1, "WhiteWyGuy", "WyBlackGuy", "WyGuyWy", new ChessGame()));
+        Assertions.assertTrue(gameDAO.gameExists(1));
+    }
+
+    @Test
+    void successfulGameDoesntExist() throws DataAccessException {
+        Assertions.assertFalse(gameDAO.gameExists(982952867));
     }
 
 }
