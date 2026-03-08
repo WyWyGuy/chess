@@ -158,4 +158,23 @@ public class DataAccessTests {
         Assertions.assertFalse(gameDAO.gameExists(982952867));
     }
 
+    @Test
+    void successfulGetGame() throws DataAccessException {
+        gameDAO.createGame(new GameData(6, "white", "black", "testGame", new ChessGame()));
+        GameData returned = gameDAO.getGame(6);
+        Assertions.assertEquals(6, returned.gameID());
+        Assertions.assertEquals("white", returned.whiteUsername());
+        Assertions.assertEquals("black", returned.blackUsername());
+        Assertions.assertEquals("testGame", returned.gameName());
+        Assertions.assertEquals(new ChessGame(), returned.game());
+    }
+
+    @Test
+    void failedGetGameDoesNotExist() throws DataAccessException {
+        Assertions.assertThrows(DataAccessException.class,
+                () -> {
+                    gameDAO.getGame(25980638);
+                });
+    }
+
 }
