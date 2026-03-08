@@ -93,4 +93,20 @@ public class DataAccessTests {
         Assertions.assertFalse(authDAO.authExists("whatAmIAuthenticating...?"));
     }
 
+    @Test
+    void successfulGetAuth() throws DataAccessException {
+        authDAO.createAuth(new AuthData("authTokenHere", "usernameHere"));
+        AuthData returned = authDAO.getAuth("authTokenHere");
+        Assertions.assertEquals("authTokenHere", returned.authToken());
+        Assertions.assertEquals("usernameHere", returned.username());
+    }
+
+    @Test
+    void failedGetAuthDoesNotExist() throws DataAccessException {
+        Assertions.assertThrows(DataAccessException.class,
+                () -> {
+                    authDAO.getAuth("niceTryHacker!");
+                });
+    }
+
 }
