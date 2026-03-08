@@ -6,6 +6,7 @@ import model.AuthData;
 import model.GameData;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Collection;
 
 public class DatabaseGameDAO implements GameDAO {
@@ -89,17 +90,53 @@ public class DatabaseGameDAO implements GameDAO {
 
     @Override
     public Collection<GameData> listGames() throws DataAccessException {
-        throw new DataAccessException("Not implemented");
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM games")) {
+            ResultSet rs = stmt.executeQuery();
+            Collection<GameData> games = new ArrayList<GameData>();
+            while (rs.next()) {
+                int col1 = rs.getInt("gameID");
+                String col2 = rs.getString("whiteUsername");
+                String col3 = rs.getString("blackUsername");
+                String col4 = rs.getString("gameName");
+                String col5 = rs.getString("game");
+                ChessGame col5game = gson.fromJson(col5, ChessGame.class);
+                games.add(new GameData(col1, col2, col3, col4, col5game));
+            }
+            return games;
+        } catch (SQLException e) {
+            throw new DataAccessException("Could not return games list");
+        }
     }
 
     @Override
     public void updateWhitePlayer(int id, String player) throws DataAccessException {
-
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement("UPDATE games SET whiteUsername = ? WHERE gameID = ?")) {
+            stmt.setString(1, player);
+            stmt.setString(2, String.valueOf(id));
+            int changed = stmt.executeUpdate();
+            if (changed != 1) {
+                throw new DataAccessException("Updating (white) game " + id + " should have modified one row but " + changed + " were changed");
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Could not update white player in game " + id);
+        }
     }
 
     @Override
     public void updateBlackPlayer(int id, String player) throws DataAccessException {
-
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement("UPDATE games SET blackUsername = ? WHERE gameID = ?", Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setString(1, player);
+            stmt.setString(2, String.valueOf(id));
+            int changed = stmt.executeUpdate();
+            if (changed != 1) {
+                throw new DataAccessException("Updating (black) game " + id + " should have modified one row but " + changed + " were changed");
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Could not update black player in game " + id);
+        }
     }
 
 }

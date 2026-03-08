@@ -11,6 +11,8 @@ import service.RegisterRequest;
 import javax.xml.crypto.Data;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class DataAccessTests {
@@ -196,6 +198,60 @@ public class DataAccessTests {
                 () -> {
                     gameDAO.createGame(new GameData(-1, null, null, null, null));
                 });
+    }
+
+    @Test
+    void successfulWhiteUpdate() throws DataAccessException {
+        userDAO.createUser(new UserData("wtest1", "null", "null@null.null"));
+        userDAO.createUser(new UserData("wtest2", "null", "null@null.null"));
+        userDAO.createUser(new UserData("NEWwtest1", "null", "null@null.null"));
+        int id = gameDAO.createGame(new GameData(0, "wtest1", "wtest2", "wtest", new ChessGame()));
+        gameDAO.updateWhitePlayer(id, "NEWwtest1");
+        GameData game = gameDAO.getGame(id);
+        Assertions.assertEquals("NEWwtest1", game.whiteUsername());
+    }
+
+    @Test
+    void successfulBlackUpdate() throws DataAccessException {
+        userDAO.createUser(new UserData("btest1", "null", "null@null.null"));
+        userDAO.createUser(new UserData("btest2", "null", "null@null.null"));
+        userDAO.createUser(new UserData("NEWbtest1", "null", "null@null.null"));
+        int id = gameDAO.createGame(new GameData(0, "btest1", "btest2", "btest", new ChessGame()));
+        gameDAO.updateWhitePlayer(id, "NEWbtest1");
+        GameData game = gameDAO.getGame(id);
+        Assertions.assertEquals("NEWbtest1", game.whiteUsername());
+    }
+
+    @Test
+    void failedWhiteUpdate() throws DataAccessException {
+        Assertions.assertThrows(DataAccessException.class,
+                () -> {
+                    gameDAO.updateWhitePlayer(-1, "I Wanna Play!");
+                });
+    }
+
+    @Test
+    void failedBlackUpdate() throws DataAccessException {
+        Assertions.assertThrows(DataAccessException.class,
+                () -> {
+                    gameDAO.updateBlackPlayer(-1, "I Wanna Play Too!");
+                });
+    }
+
+    @Test
+    void successfulGamesList() throws DataAccessException {
+        userDAO.createUser(new UserData("1", "null", "null@null.null"));
+        userDAO.createUser(new UserData("2", "null", "null@null.null"));
+        int id = gameDAO.createGame(new GameData(0, "1", "2", "1-2", new ChessGame()));
+        Collection<GameData> games = gameDAO.listGames();
+        ArrayList<GameData> gameList = new ArrayList<>(games);
+        Assertions.assertEquals(gameList.get(0), new GameData(1, "1", "2", "1-2", new ChessGame()));
+    }
+
+    @Test
+    void successfulEmptyGamesList() throws DataAccessException {
+        Collection<GameData> games = gameDAO.listGames();
+        Assertions.assertEquals(new ArrayList<GameData>(), games);
     }
 
 }
