@@ -2,13 +2,21 @@ package dataaccess;
 
 import model.GameData;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Collection;
 
 public class DatabaseGameDAO implements GameDAO {
 
     @Override
     public void clear() throws DataAccessException {
-
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement("DELETE FROM games")) {
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new DataAccessException("Could not clear the games table");
+        }
     }
 
     @Override

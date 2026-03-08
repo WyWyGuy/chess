@@ -140,4 +140,9 @@ public class DataAccessTests {
                 });
     }
 
+    @Test
+    void successfulGameClear() throws DataAccessException {
+        gameDAO.clear();
+    }
+
 }

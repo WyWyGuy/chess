@@ -17,7 +17,7 @@ public class DatabaseAuthDAO implements AuthDAO {
              PreparedStatement stmt = conn.prepareStatement("DELETE FROM auths")) {
             stmt.executeUpdate();
         } catch (SQLException e) {
-            throw new DataAccessException("Could not clear the auth table");
+            throw new DataAccessException("Could not clear the auths table");
         }
     }
 
