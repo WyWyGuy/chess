@@ -81,9 +81,9 @@ public class Server {
             RegisterResult registerResult = userService.register(registerRequest);
             ctx.status(200);
             ctx.result(gson.toJson(registerResult));
-        } catch (DataAccessException e) {
-            ctx.status(403);
-            ctx.result(gson.toJson(new Message("Error: already taken")));
+        } catch (ServiceException e) {
+            ctx.status(e.getStatusCode());
+            ctx.json(new Message("Error: " + e.getMessage()));
         } catch (Exception e) {
             ctx.status(500);
             ctx.result(gson.toJson(new Message("Error: " + e.getMessage())));
@@ -109,9 +109,9 @@ public class Server {
             LoginResult loginResult = authService.login(loginRequest);
             ctx.status(200);
             ctx.result(gson.toJson(loginResult));
-        } catch (DataAccessException e) {
-            ctx.status(401);
-            ctx.result(gson.toJson(new Message("Error: unauthorized")));
+        } catch (ServiceException e) {
+            ctx.status(e.getStatusCode());
+            ctx.json(new Message("Error: " + e.getMessage()));
         } catch (Exception e) {
             ctx.status(500);
             ctx.result(gson.toJson(new Message("Error: " + e.getMessage())));
@@ -129,9 +129,9 @@ public class Server {
             authService.logout(authToken);
             ctx.status(200);
             ctx.result(gson.toJson(new Object()));
-        } catch (DataAccessException e) {
-            ctx.status(401);
-            ctx.result(gson.toJson(new Message("Error: unauthorized")));
+        } catch (ServiceException e) {
+            ctx.status(e.getStatusCode());
+            ctx.json(new Message("Error: " + e.getMessage()));
         } catch (Exception e) {
             ctx.status(500);
             ctx.result(gson.toJson(new Message("Error: " + e.getMessage())));
@@ -162,9 +162,9 @@ public class Server {
             CreateGameResult createGameResult = gameService.createGame(createGameRequest, authToken);
             ctx.status(200);
             ctx.result(gson.toJson(createGameResult));
-        } catch (DataAccessException e) {
-            ctx.status(401);
-            ctx.result(gson.toJson(new Message("Error: unauthorized")));
+        } catch (ServiceException e) {
+            ctx.status(e.getStatusCode());
+            ctx.json(new Message("Error: " + e.getMessage()));
         } catch (Exception e) {
             ctx.status(500);
             ctx.result(gson.toJson(new Message("Error: " + e.getMessage())));
@@ -182,9 +182,9 @@ public class Server {
             ListGamesResult listGamesResult = gameService.listGames(authToken);
             ctx.status(200);
             ctx.result(gson.toJson(listGamesResult));
-        } catch (DataAccessException e) {
-            ctx.status(401);
-            ctx.result(gson.toJson(new Message("Error: unauthorized")));
+        } catch (ServiceException e) {
+            ctx.status(e.getStatusCode());
+            ctx.json(new Message("Error: " + e.getMessage()));
         } catch (Exception e) {
             ctx.status(500);
             ctx.result(gson.toJson(new Message("Error: " + e.getMessage())));
@@ -216,18 +216,9 @@ public class Server {
             gameService.joinGame(joinGameRequest, authToken);
             ctx.status(200);
             ctx.result(gson.toJson(new Object()));
-        } catch (DataAccessException e) {
-            System.out.println(e.getMessage());
-            if (e.getMessage().contains("already taken")) {
-                ctx.status(403);
-                ctx.result(gson.toJson(new Message("Error: already taken")));
-            } else if (e.getMessage().contains("Auth token does not exist")) {
-                ctx.status(401);
-                ctx.result(gson.toJson(new Message("Error: unauthorized")));
-            } else {
-                ctx.status(400);
-                ctx.result(gson.toJson(new Message("Error: bad request")));
-            }
+        } catch (ServiceException e) {
+            ctx.status(e.getStatusCode());
+            ctx.json(new Message("Error: " + e.getMessage()));
         } catch (Exception e) {
             ctx.status(500);
             ctx.result(gson.toJson(new Message("Error: " + e.getMessage())));

@@ -11,14 +11,20 @@ import java.util.List;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ServiceTests {
 
-    @Test
-    void successfulClear() throws DataAccessException {
+    @BeforeAll
+    static void wipeDatabase() throws DataAccessException {
         var clearService = new ClearService();
         clearService.clear();
     }
 
     @Test
-    void successfulRegister() throws DataAccessException {
+    void successfulClear() throws DataAccessException, ServiceException {
+        var clearService = new ClearService();
+        clearService.clear();
+    }
+
+    @Test
+    void successfulRegister() throws DataAccessException, ServiceException {
         var userService = new UserService();
         RegisterResult registerResult = userService.register(new RegisterRequest("Wyatt", "p@ssw0rd", "wywyguy@byu.edu"));
         Assertions.assertNotNull(registerResult.authToken());
@@ -26,10 +32,10 @@ public class ServiceTests {
     }
 
     @Test
-    void failedRegisterTwice() throws DataAccessException {
+    void failedRegisterTwice() throws DataAccessException, ServiceException {
         var userService = new UserService();
         RegisterResult registerResult1 = userService.register(new RegisterRequest("Bob", "ILoveBuilding", "bob@bob.bob"));
-        Assertions.assertThrows(DataAccessException.class,
+        Assertions.assertThrows(ServiceException.class,
                 () -> {
                     userService.register(
                             new RegisterRequest("Bob", "DidIAlreadySignUp?", "bob2@bob.bob")
@@ -38,7 +44,7 @@ public class ServiceTests {
     }
 
     @Test
-    void successfulLogin() throws DataAccessException {
+    void successfulLogin() throws DataAccessException, ServiceException {
         var userService = new UserService();
         var authService = new AuthService();
         RegisterResult registerResult = userService.register(new RegisterRequest("John", "#1baptist", "john@12apostles.cel"));
@@ -48,11 +54,11 @@ public class ServiceTests {
     }
 
     @Test
-    void failedLoginWrongPassword() throws DataAccessException {
+    void failedLoginWrongPassword() throws DataAccessException, ServiceException {
         var userService = new UserService();
         var authService = new AuthService();
         RegisterResult registerResult = userService.register(new RegisterRequest("Charles", "stinkingBishop500", "cheddarchesse@gmail.com"));
-        Assertions.assertThrows(DataAccessException.class,
+        Assertions.assertThrows(ServiceException.class,
                 () -> {
                     authService.login(
                             new LoginRequest("Charles", "chessnuts1019")
@@ -61,7 +67,7 @@ public class ServiceTests {
     }
 
     @Test
-    void successfulLogout() throws DataAccessException {
+    void successfulLogout() throws DataAccessException, ServiceException {
         var userService = new UserService();
         var authService = new AuthService();
         RegisterResult registerResult = userService.register(new RegisterRequest("Scooby-doo", "ruhRuh*600", "food@mystery.inc"));
@@ -69,16 +75,16 @@ public class ServiceTests {
     }
 
     @Test
-    void failedLogoutNotLoggedIn() throws DataAccessException {
+    void failedLogoutNotLoggedIn() throws DataAccessException, ServiceException {
         var authService = new AuthService();
-        Assertions.assertThrows(DataAccessException.class,
+        Assertions.assertThrows(ServiceException.class,
                 () -> {
                     authService.logout("11111111-00000000000-99999999999");
                 });
     }
 
     @Test
-    void successfulCreateGame() throws DataAccessException {
+    void successfulCreateGame() throws DataAccessException, ServiceException {
         var userService = new UserService();
         var gameService = new GameService();
         RegisterResult registerResult = userService.register(new RegisterRequest("Levi", "Levi", "Levi@Levi.com"));
@@ -87,16 +93,16 @@ public class ServiceTests {
     }
 
     @Test
-    void failedCreateGameUnauthorized() throws DataAccessException {
+    void failedCreateGameUnauthorized() throws DataAccessException, ServiceException {
         var gameService = new GameService();
-        Assertions.assertThrows(DataAccessException.class,
+        Assertions.assertThrows(ServiceException.class,
                 () -> {
                     gameService.createGame(new CreateGameRequest("Checkers"), "0");
                 });
     }
 
     @Test
-    void successfulListGames() throws DataAccessException {
+    void successfulListGames() throws DataAccessException, ServiceException {
         var userService = new UserService();
         var gameService = new GameService();
         RegisterResult registerResult = userService.register(new RegisterRequest("Steven", "theCakeIsALie", "Jumpman@mushroomKingdom"));
@@ -107,16 +113,16 @@ public class ServiceTests {
     }
 
     @Test
-    void failedListGamesUnauthorized() throws DataAccessException {
+    void failedListGamesUnauthorized() throws DataAccessException, ServiceException {
         var gameService = new GameService();
-        Assertions.assertThrows(DataAccessException.class,
+        Assertions.assertThrows(ServiceException.class,
                 () -> {
                     gameService.listGames("0");
                 });
     }
 
     @Test
-    void successfulJoinGame() throws DataAccessException {
+    void successfulJoinGame() throws DataAccessException, ServiceException {
         ClearService clearService = new ClearService();
         clearService.clear();
         var userService = new UserService();
@@ -130,14 +136,14 @@ public class ServiceTests {
     }
 
     @Test
-    void failedJoinGameAlreadyTaken() throws DataAccessException {
+    void failedJoinGameAlreadyTaken() throws DataAccessException, ServiceException {
         var userService = new UserService();
         var gameService = new GameService();
         RegisterResult registerResult1 = userService.register(new RegisterRequest("Guy 1", "secretTunnel", "guy1@gmail.com"));
         RegisterResult registerResult2 = userService.register(new RegisterRequest("Guy 2", "password", "guy2@gmail.com"));
         CreateGameResult createGameResult = gameService.createGame(new CreateGameRequest("Guy Game"), registerResult1.authToken());
         gameService.joinGame(new JoinGameRequest(ChessGame.TeamColor.BLACK, createGameResult.gameID()), registerResult2.authToken());
-        Assertions.assertThrows(DataAccessException.class,
+        Assertions.assertThrows(ServiceException.class,
                 () -> {
                     gameService.joinGame(new JoinGameRequest(ChessGame.TeamColor.BLACK, createGameResult.gameID()), registerResult1.authToken());
                 });
