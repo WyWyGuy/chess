@@ -13,10 +13,22 @@ public class DatabaseAuthDAO implements AuthDAO {
 
     @Override
     public void clear() throws DataAccessException {
-        try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement stmt = conn.prepareStatement("DELETE FROM auths")) {
-            stmt.executeUpdate();
+        Connection conn = DatabaseManager.getConnection();
+        try {
+            conn.setAutoCommit(false);
+            try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM auths")) {
+                stmt.executeUpdate();
+            }
+            try (PreparedStatement stmt = conn.prepareStatement("ALTER TABLE auths AUTO_INCREMENT = 1")) {
+                stmt.executeUpdate();
+            }
+            conn.commit();
         } catch (SQLException e) {
+            try {
+                conn.rollback();
+            } catch (SQLException ex) {
+                throw new DataAccessException("Could not rollback auths table clearing");
+            }
             throw new DataAccessException("Could not clear the auths table");
         }
     }

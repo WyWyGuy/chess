@@ -20,8 +20,10 @@ public class DataAccessTests {
     DatabaseGameDAO gameDAO = new DatabaseGameDAO();
 
     @BeforeEach
-    void wipeDatbase() throws DataAccessException {
+    void wipeDatabase() throws DataAccessException {
         userDAO.clear();
+        authDAO.clear();
+        gameDAO.clear();
     }
 
     @Test
@@ -149,6 +151,8 @@ public class DataAccessTests {
 
     @Test
     void successfulGameExists() throws DataAccessException {
+        userDAO.createUser(new UserData("WhiteWyGuy", "null", "null@null.null"));
+        userDAO.createUser(new UserData("WyBlackGuy", "null", "null@null.null"));
         gameDAO.createGame(new GameData(1, "WhiteWyGuy", "WyBlackGuy", "WyGuyWy", new ChessGame()));
         Assertions.assertTrue(gameDAO.gameExists(1));
     }
@@ -160,9 +164,11 @@ public class DataAccessTests {
 
     @Test
     void successfulGetGame() throws DataAccessException {
-        gameDAO.createGame(new GameData(6, "white", "black", "testGame", new ChessGame()));
-        GameData returned = gameDAO.getGame(6);
-        Assertions.assertEquals(6, returned.gameID());
+        userDAO.createUser(new UserData("white", "null", "null@null.null"));
+        userDAO.createUser(new UserData("black", "null", "null@null.null"));
+        int givenID = gameDAO.createGame(new GameData(6, "white", "black", "testGame", new ChessGame()));
+        GameData returned = gameDAO.getGame(givenID);
+        Assertions.assertEquals(1, returned.gameID());
         Assertions.assertEquals("white", returned.whiteUsername());
         Assertions.assertEquals("black", returned.blackUsername());
         Assertions.assertEquals("testGame", returned.gameName());
@@ -174,6 +180,21 @@ public class DataAccessTests {
         Assertions.assertThrows(DataAccessException.class,
                 () -> {
                     gameDAO.getGame(25980638);
+                });
+    }
+
+    @Test
+    void successfulCreateGame() throws DataAccessException {
+        userDAO.createUser(new UserData("WyWyGuy1", "null", "null@null.null"));
+        userDAO.createUser(new UserData("WyWyGuy2", "null", "null@null.null"));
+        gameDAO.createGame(new GameData(0, "WyWyGuy1", "WyWYGuy2", "WyWyGame", new ChessGame()));
+    }
+
+    @Test
+    void failedCreateGameNullParameters() throws DataAccessException {
+        Assertions.assertThrows(DataAccessException.class,
+                () -> {
+                    gameDAO.createGame(new GameData(-1, null, null, null, null));
                 });
     }
 

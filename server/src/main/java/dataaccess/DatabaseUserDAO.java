@@ -13,10 +13,22 @@ public class DatabaseUserDAO implements UserDAO {
 
     @Override
     public void clear() throws DataAccessException {
-        try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement stmt = conn.prepareStatement("DELETE FROM users")) {
-            stmt.executeUpdate();
+        Connection conn = DatabaseManager.getConnection();
+        try {
+            conn.setAutoCommit(false);
+            try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM users")) {
+                stmt.executeUpdate();
+            }
+            try (PreparedStatement stmt = conn.prepareStatement("ALTER TABLE users AUTO_INCREMENT = 1")) {
+                stmt.executeUpdate();
+            }
+            conn.commit();
         } catch (SQLException e) {
+            try {
+                conn.rollback();
+            } catch (SQLException ex) {
+                throw new DataAccessException("Could not rollback users table clearing");
+            }
             throw new DataAccessException("Could not clear the users table");
         }
     }

@@ -5,10 +5,7 @@ import com.google.gson.Gson;
 import model.AuthData;
 import model.GameData;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.Collection;
 
 public class DatabaseGameDAO implements GameDAO {
@@ -17,10 +14,22 @@ public class DatabaseGameDAO implements GameDAO {
 
     @Override
     public void clear() throws DataAccessException {
-        try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement stmt = conn.prepareStatement("DELETE FROM games")) {
-            stmt.executeUpdate();
+        Connection conn = DatabaseManager.getConnection();
+        try {
+            conn.setAutoCommit(false);
+            try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM games")) {
+                stmt.executeUpdate();
+            }
+            try (PreparedStatement stmt = conn.prepareStatement("ALTER TABLE games AUTO_INCREMENT = 1")) {
+                stmt.executeUpdate();
+            }
+            conn.commit();
         } catch (SQLException e) {
+            try {
+                conn.rollback();
+            } catch (SQLException ex) {
+                throw new DataAccessException("Could not rollback games table clearing");
+            }
             throw new DataAccessException("Could not clear the games table");
         }
     }
@@ -60,7 +69,22 @@ public class DatabaseGameDAO implements GameDAO {
 
     @Override
     public int createGame(GameData game) throws DataAccessException {
-        throw new DataAccessException("Not implemented");
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement("INSERT INTO games (whiteUsername, blackUsername, gameName, game) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setString(1, game.whiteUsername());
+            stmt.setString(2, game.blackUsername());
+            stmt.setString(3, game.gameName());
+            stmt.setString(4, gson.toJson(game.game()));
+            stmt.executeUpdate();
+            ResultSet rs = stmt.getGeneratedKeys();
+            if (rs.next()) {
+                return rs.getInt(1);
+            } else {
+                throw new DataAccessException("Creating game " + game.game() + " did not return a game ID.");
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Could not create game " + game.gameName());
+        }
     }
 
     @Override
