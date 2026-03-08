@@ -123,6 +123,7 @@ public class Server {
         if (authToken == null) {
             ctx.status(401);
             ctx.result(gson.toJson(new Message("Error: unauthorized")));
+            return;
         }
         try {
             authService.logout(authToken);
@@ -143,6 +144,7 @@ public class Server {
         if (authToken == null) {
             ctx.status(401);
             ctx.result(gson.toJson(new Message("Error: unauthorized")));
+            return;
         }
         try {
             createGameRequest = gson.fromJson(ctx.body(), CreateGameRequest.class);
@@ -174,6 +176,7 @@ public class Server {
         if (authToken == null) {
             ctx.status(401);
             ctx.result(gson.toJson(new Message("Error: unauthorized")));
+            return;
         }
         try {
             ListGamesResult listGamesResult = gameService.listGames(authToken);
@@ -194,6 +197,7 @@ public class Server {
         if (authToken == null) {
             ctx.status(401);
             ctx.result(gson.toJson(new Message("Error: unauthorized")));
+            return;
         }
         try {
             joinGameRequest = gson.fromJson(ctx.body(), JoinGameRequest.class);

@@ -29,9 +29,9 @@ public class DatabaseGameDAO implements GameDAO {
             try {
                 conn.rollback();
             } catch (SQLException ex) {
-                throw new DataAccessException("Could not rollback games table clearing");
+                throw new DataAccessException("Could not rollback games table clearing", ex);
             }
-            throw new DataAccessException("Could not clear the games table");
+            throw new DataAccessException("Could not clear the games table", e);
         }
     }
 
@@ -39,11 +39,11 @@ public class DatabaseGameDAO implements GameDAO {
     public boolean gameExists(int id) throws DataAccessException {
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement("SELECT * FROM games WHERE gameID = ?")) {
-            stmt.setString(1, String.valueOf(id));
+            stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
             return rs.next();
         } catch (SQLException e) {
-            throw new DataAccessException("Could not determine if game " + id + " exists");
+            throw new DataAccessException("Could not determine if game " + id + " exists", e);
         }
     }
 
@@ -51,7 +51,7 @@ public class DatabaseGameDAO implements GameDAO {
     public GameData getGame(int id) throws DataAccessException {
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement("SELECT * FROM games WHERE gameID = ?")) {
-            stmt.setString(1, String.valueOf(id));
+            stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 int col1 = rs.getInt("gameID");
@@ -64,7 +64,7 @@ public class DatabaseGameDAO implements GameDAO {
             }
             throw new DataAccessException("Could not find game " + id);
         } catch (SQLException e) {
-            throw new DataAccessException("Could not return game " + id);
+            throw new DataAccessException("Could not return game " + id, e);
         }
     }
 
@@ -84,7 +84,7 @@ public class DatabaseGameDAO implements GameDAO {
                 throw new DataAccessException("Creating game " + game.game() + " did not return a game ID.");
             }
         } catch (SQLException e) {
-            throw new DataAccessException("Could not create game " + game.gameName());
+            throw new DataAccessException("Could not create game " + game.gameName(), e);
         }
     }
 
@@ -105,7 +105,7 @@ public class DatabaseGameDAO implements GameDAO {
             }
             return games;
         } catch (SQLException e) {
-            throw new DataAccessException("Could not return games list");
+            throw new DataAccessException("Could not return games list", e);
         }
     }
 
@@ -114,28 +114,28 @@ public class DatabaseGameDAO implements GameDAO {
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement("UPDATE games SET whiteUsername = ? WHERE gameID = ?")) {
             stmt.setString(1, player);
-            stmt.setString(2, String.valueOf(id));
+            stmt.setInt(2, id);
             int changed = stmt.executeUpdate();
             if (changed != 1) {
                 throw new DataAccessException("Updating (white) game " + id + " should have modified one row but " + changed + " were changed");
             }
         } catch (SQLException e) {
-            throw new DataAccessException("Could not update white player in game " + id);
+            throw new DataAccessException("Could not update white player in game " + id, e);
         }
     }
 
     @Override
     public void updateBlackPlayer(int id, String player) throws DataAccessException {
         try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement stmt = conn.prepareStatement("UPDATE games SET blackUsername = ? WHERE gameID = ?", Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement stmt = conn.prepareStatement("UPDATE games SET blackUsername = ? WHERE gameID = ?")) {
             stmt.setString(1, player);
-            stmt.setString(2, String.valueOf(id));
+            stmt.setInt(2, id);
             int changed = stmt.executeUpdate();
             if (changed != 1) {
                 throw new DataAccessException("Updating (black) game " + id + " should have modified one row but " + changed + " were changed");
             }
         } catch (SQLException e) {
-            throw new DataAccessException("Could not update black player in game " + id);
+            throw new DataAccessException("Could not update black player in game " + id, e);
         }
     }
 

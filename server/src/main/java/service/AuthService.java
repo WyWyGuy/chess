@@ -3,6 +3,7 @@ package service;
 import dataaccess.*;
 import model.AuthData;
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -17,7 +18,7 @@ public class AuthService {
             throw new DataAccessException("User does not exist: " + request.username());
         }
         UserData user = userDAO.getUser(request.username());
-        if (!Objects.equals(request.password(), user.password())) {
+        if (!BCrypt.checkpw(request.password(), user.password())) {
             throw new DataAccessException("Incorrect password entered for user " + request.username());
         }
         AuthData auth = new AuthData(UUID.randomUUID().toString(), request.username());

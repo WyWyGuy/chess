@@ -27,9 +27,9 @@ public class DatabaseUserDAO implements UserDAO {
             try {
                 conn.rollback();
             } catch (SQLException ex) {
-                throw new DataAccessException("Could not rollback users table clearing");
+                throw new DataAccessException("Could not rollback users table clearing", e);
             }
-            throw new DataAccessException("Could not clear the users table");
+            throw new DataAccessException("Could not clear the users table", e);
         }
     }
 
@@ -41,7 +41,7 @@ public class DatabaseUserDAO implements UserDAO {
             ResultSet rs = stmt.executeQuery();
             return rs.next();
         } catch (SQLException e) {
-            throw new DataAccessException("Could not determine if " + username + " exists");
+            throw new DataAccessException("Could not determine if " + username + " exists", e);
         }
     }
 
@@ -59,7 +59,7 @@ public class DatabaseUserDAO implements UserDAO {
             }
             throw new DataAccessException("Could not find user " + username);
         } catch (SQLException e) {
-            throw new DataAccessException("Could not return user " + username);
+            throw new DataAccessException("Could not return user " + username, e);
         }
     }
 
@@ -72,7 +72,7 @@ public class DatabaseUserDAO implements UserDAO {
             stmt.setString(3, user.email());
             stmt.executeUpdate();
         } catch (SQLException e) {
-            throw new DataAccessException("Could not create user " + user.username());
+            throw new DataAccessException("Could not create user " + user.username(), e);
         }
     }
 

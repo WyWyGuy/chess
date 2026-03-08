@@ -27,9 +27,9 @@ public class DatabaseAuthDAO implements AuthDAO {
             try {
                 conn.rollback();
             } catch (SQLException ex) {
-                throw new DataAccessException("Could not rollback auths table clearing");
+                throw new DataAccessException("Could not rollback auths table clearing", ex);
             }
-            throw new DataAccessException("Could not clear the auths table");
+            throw new DataAccessException("Could not clear the auths table", e);
         }
     }
 
@@ -41,7 +41,7 @@ public class DatabaseAuthDAO implements AuthDAO {
             ResultSet rs = stmt.executeQuery();
             return rs.next();
         } catch (SQLException e) {
-            throw new DataAccessException("Could not determine if " + authToken + " exists");
+            throw new DataAccessException("Could not determine if " + authToken + " exists", e);
         }
     }
 
@@ -58,7 +58,7 @@ public class DatabaseAuthDAO implements AuthDAO {
             }
             throw new DataAccessException("Could not find auth " + authToken);
         } catch (SQLException e) {
-            throw new DataAccessException("Could not return auth " + authToken);
+            throw new DataAccessException("Could not return auth " + authToken, e);
         }
     }
 
@@ -70,7 +70,7 @@ public class DatabaseAuthDAO implements AuthDAO {
             stmt.setString(2, auth.username());
             stmt.executeUpdate();
         } catch (SQLException e) {
-            throw new DataAccessException("Could not create auth " + auth.authToken());
+            throw new DataAccessException("Could not create auth " + auth.authToken(), e);
         }
     }
 
@@ -84,7 +84,7 @@ public class DatabaseAuthDAO implements AuthDAO {
                 throw new DataAccessException("Expected to delete " + authToken + " but " + deleted + " auths were deleted");
             }
         } catch (SQLException e) {
-            throw new DataAccessException("Could not delete auth " + authToken);
+            throw new DataAccessException("Could not delete auth " + authToken, e);
         }
     }
 
