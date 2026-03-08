@@ -1,6 +1,9 @@
 package dataaccess;
 
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.ChessPosition;
+import chess.InvalidMoveException;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -252,6 +255,19 @@ public class DataAccessTests {
     void successfulEmptyGamesList() throws DataAccessException {
         Collection<GameData> games = gameDAO.listGames();
         Assertions.assertEquals(new ArrayList<GameData>(), games);
+    }
+
+    @Test
+    void chessGameSerializeDeserialize() throws DataAccessException, InvalidMoveException {
+        ChessGame game = new ChessGame();
+        ChessPosition start = new ChessPosition(2, 5);
+        ChessPosition end = new ChessPosition(4, 5);
+        ChessMove move = new ChessMove(start, end, null);
+        game.makeMove(move);
+        GameData initialGame = new GameData(1, null, null, "One Move", game);
+        int id = gameDAO.createGame(initialGame);
+        GameData receivedGame = gameDAO.getGame(id);
+        Assertions.assertEquals(initialGame, receivedGame);
     }
 
 }
