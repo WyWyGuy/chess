@@ -125,4 +125,19 @@ public class DataAccessTests {
                 });
     }
 
+    @Test
+    void successfulDeleteAuth() throws DataAccessException {
+        userDAO.createUser(new UserData("abcd", "null", "null@null.null"));
+        authDAO.createAuth(new AuthData("dontRevokeMyAccess!", "abcd"));
+        authDAO.deleteAuth("dontRevokeMyAccess!");
+    }
+
+    @Test
+    void failedDeleteAuthDoesntExist() throws DataAccessException {
+        Assertions.assertThrows(DataAccessException.class,
+                () -> {
+                    authDAO.deleteAuth("whosThere???");
+                });
+    }
+
 }
