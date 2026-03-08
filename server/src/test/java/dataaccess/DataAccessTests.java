@@ -84,6 +84,7 @@ public class DataAccessTests {
 
     @Test
     void successfulAuthExists() throws DataAccessException {
+        userDAO.createUser(new UserData("mySpecialUser", "null", "null@null.null"));
         authDAO.createAuth(new AuthData("mySpecialAuthToken", "mySpecialUser"));
         Assertions.assertTrue(authDAO.authExists("mySpecialAuthToken"));
     }
@@ -95,6 +96,7 @@ public class DataAccessTests {
 
     @Test
     void successfulGetAuth() throws DataAccessException {
+        userDAO.createUser(new UserData("usernameHere", "null", "null@null.null"));
         authDAO.createAuth(new AuthData("authTokenHere", "usernameHere"));
         AuthData returned = authDAO.getAuth("authTokenHere");
         Assertions.assertEquals("authTokenHere", returned.authToken());
@@ -106,6 +108,20 @@ public class DataAccessTests {
         Assertions.assertThrows(DataAccessException.class,
                 () -> {
                     authDAO.getAuth("niceTryHacker!");
+                });
+    }
+
+    @Test
+    void successfulCreateAuth() throws DataAccessException {
+        userDAO.createUser(new UserData("WyWyGuy", "null", "null@null.null"));
+        authDAO.createAuth(new AuthData("wywyguyAuthToken", "WyWyGuy"));
+    }
+
+    @Test
+    void failedCreateAuthNullParameters() throws DataAccessException {
+        Assertions.assertThrows(DataAccessException.class,
+                () -> {
+                    authDAO.createAuth(new AuthData(null, null));
                 });
     }
 
