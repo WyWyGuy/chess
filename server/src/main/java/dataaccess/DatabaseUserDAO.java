@@ -17,7 +17,7 @@ public class DatabaseUserDAO implements UserDAO {
              PreparedStatement stmt = conn.prepareStatement("DELETE FROM users")) {
             stmt.executeUpdate();
         } catch (SQLException e) {
-            throw new DataAccessException("Could not clear the user database");
+            throw new DataAccessException("Could not clear the user table");
         }
     }
 

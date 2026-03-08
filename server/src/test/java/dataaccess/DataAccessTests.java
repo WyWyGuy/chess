@@ -1,5 +1,6 @@
 package dataaccess;
 
+import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.*;
 import service.ClearService;
@@ -42,7 +43,6 @@ public class DataAccessTests {
         userDAO.createUser(new UserData("hello", "world", "hw@helloworld.com"));
         UserData returned = userDAO.getUser("hello");
         Assertions.assertEquals("hello", returned.username());
-        System.out.println(returned.password());
         Assertions.assertNotNull(returned.password());
         Assertions.assertEquals("hw@helloworld.com", returned.email());
     }
@@ -75,6 +75,22 @@ public class DataAccessTests {
                 () -> {
                     userDAO.createUser(new UserData("twin", "no-I-am", "twin2@gmail.com"));
                 });
+    }
+
+    @Test
+    void successfulAuthClear() throws DataAccessException {
+        authDAO.clear();
+    }
+
+    @Test
+    void successfulAuthExists() throws DataAccessException {
+        authDAO.createAuth(new AuthData("mySpecialAuthToken", "mySpecialUser"));
+        Assertions.assertTrue(authDAO.authExists("mySpecialAuthToken"));
+    }
+
+    @Test
+    void successfulAuthDoesntExist() throws DataAccessException {
+        Assertions.assertFalse(authDAO.authExists("whatAmIAuthenticating...?"));
     }
 
 }
