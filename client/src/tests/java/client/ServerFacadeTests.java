@@ -94,12 +94,26 @@ public class ServerFacadeTests {
 
     @Test
     public void clientLogoutSuccess() {
-
+        try {
+            AuthData received = serverFacade.register("WyWyGuy", "MyPasswordHere", "wywyguy@byu.edu");
+            Assertions.assertEquals("WyWyGuy", received.username());
+            Assertions.assertNotNull(received.authToken());
+            serverFacade.logout();
+        } catch (Exception e) {
+            Assertions.fail();
+        }
+        Assertions.assertThrows(Exception.class,
+                () -> {
+                    serverFacade.logout();
+                });
     }
 
     @Test
     public void clientLogoutFailUnauthorized() {
-        
+        Assertions.assertThrows(Exception.class,
+                () -> {
+                    serverFacade.logout();
+                });
     }
 
 }

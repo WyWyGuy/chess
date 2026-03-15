@@ -48,6 +48,9 @@ public class ServerFacade {
         if (httpResponse.statusCode() != 200) {
             throw new Exception(httpResponse.body());
         }
+        if (responseClass == null) {
+            return null;
+        }
         return gson.fromJson(httpResponse.body(), responseClass);
     }
 
