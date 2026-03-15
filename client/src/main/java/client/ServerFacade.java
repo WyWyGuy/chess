@@ -58,8 +58,11 @@ public class ServerFacade {
         return new AuthData(registerResult.authToken(), registerResult.username());
     }
 
-    public AuthData login() throws Exception {
-        throw new Exception("not implemented");
+    public AuthData login(String username, String password) throws Exception {
+        LoginRequest loginRequest = new LoginRequest(username, password);
+        LoginResult loginResult = makeRequest("POST", "/session", loginRequest, LoginResult.class);
+        this.authToken = loginResult.authToken();
+        return new AuthData(loginResult.authToken(), loginResult.username());
     }
 
     public void logout() throws Exception {
