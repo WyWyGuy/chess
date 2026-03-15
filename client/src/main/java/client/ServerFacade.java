@@ -66,8 +66,8 @@ public class ServerFacade {
     }
 
     public void logout() throws Exception {
-        //CLEAR THIS.AUTHTOKEN
-        throw new Exception("not implemented");
+        makeRequest("DELETE", "/session", null, null);
+        this.authToken = null;
     }
 
     public int createGame() throws Exception {

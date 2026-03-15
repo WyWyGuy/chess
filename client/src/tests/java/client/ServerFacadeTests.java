@@ -92,4 +92,14 @@ public class ServerFacadeTests {
                 });
     }
 
+    @Test
+    public void clientLogoutSuccess() {
+
+    }
+
+    @Test
+    public void clientLogoutFailUnauthorized() {
+        
+    }
+
 }
