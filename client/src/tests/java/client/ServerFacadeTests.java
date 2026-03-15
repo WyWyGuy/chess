@@ -1,5 +1,6 @@
 package client;
 
+import chess.ChessGame;
 import dataaccess.DataAccessException;
 import dataaccess.DatabaseAuthDAO;
 import dataaccess.DatabaseGameDAO;
@@ -172,12 +173,26 @@ public class ServerFacadeTests {
 
     @Test
     public void clientJoinGameSuccess() {
-
+        try {
+            AuthData received = serverFacade.register("WyWyGuy", "MyPassword", "wywyguy@byu.edu");
+            int gameID = serverFacade.createGame("WyWyGame");
+            serverFacade.joinGame(ChessGame.TeamColor.WHITE, gameID);
+        } catch (Exception e) {
+            Assertions.fail();
+        }
     }
 
     @Test
     public void clientJoinGameFailedInvalidGameID() {
-        
+        try {
+            AuthData received = serverFacade.register("WyWyGuy", "MyPassword", "wywyguy@byu.edu");
+        } catch (Exception e) {
+            Assertions.fail();
+        }
+        Assertions.assertThrows(Exception.class,
+                () -> {
+                    serverFacade.joinGame(ChessGame.TeamColor.BLACK, 1);
+                });
     }
 
 }
