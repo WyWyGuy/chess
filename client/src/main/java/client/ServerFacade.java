@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import model.*;
 import org.junit.jupiter.api.Assertions;
 
-import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -13,6 +12,7 @@ import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.Optional;
 
 public class ServerFacade {
@@ -71,7 +71,7 @@ public class ServerFacade {
         throw new Exception("not implemented");
     }
 
-    public Container<GameData> listGames() throws Exception {
+    public Collection<GameData> listGames() throws Exception {
         throw new Exception("not implemented");
     }
 
