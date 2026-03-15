@@ -2,10 +2,11 @@ package service;
 
 import dataaccess.*;
 import model.AuthData;
+import model.LoginRequest;
+import model.LoginResult;
 import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
 
-import java.util.Objects;
 import java.util.UUID;
 
 public class AuthService {

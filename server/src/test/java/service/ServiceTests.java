@@ -2,11 +2,8 @@ package service;
 
 import chess.ChessGame;
 import dataaccess.DataAccessException;
-import org.eclipse.jetty.server.Authentication;
+import model.*;
 import org.junit.jupiter.api.*;
-
-import javax.xml.crypto.Data;
-import java.util.List;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ServiceTests {

@@ -2,11 +2,9 @@ package service;
 
 import chess.ChessGame;
 import dataaccess.*;
-import model.AuthData;
-import model.GameData;
+import model.*;
 
 import java.util.Collection;
-import java.util.Objects;
 
 public class GameService {
 

@@ -8,12 +8,7 @@ import model.AuthData;
 import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.*;
-import service.ClearService;
-import service.RegisterRequest;
 
-import javax.xml.crypto.Data;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 

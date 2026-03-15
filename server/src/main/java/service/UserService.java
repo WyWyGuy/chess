@@ -2,10 +2,10 @@ package service;
 
 import dataaccess.*;
 import model.AuthData;
+import model.RegisterRequest;
+import model.RegisterResult;
 import model.UserData;
-import org.eclipse.jetty.server.Authentication;
 
-import javax.xml.crypto.Data;
 import java.util.UUID;
 
 public class UserService {

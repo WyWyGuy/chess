@@ -1,18 +1,11 @@
 package server;
 
 import com.google.gson.Gson;
-import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
 import io.javalin.*;
 import io.javalin.http.Context;
-import org.eclipse.jetty.server.Authentication;
+import model.*;
 import service.*;
-
-import javax.xml.crypto.Data;
-import java.util.Objects;
-
-import static chess.ChessGame.TeamColor.BLACK;
-import static chess.ChessGame.TeamColor.WHITE;
 
 public class Server {
 
