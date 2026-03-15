@@ -140,4 +140,14 @@ public class ServerFacadeTests {
                 });
     }
 
+    @Test
+    public void clientListGamesSuccess() {
+
+    }
+
+    @Test
+    public void clientListGamesFailedUnauthorized() {
+        
+    }
+
 }

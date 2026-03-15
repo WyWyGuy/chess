@@ -80,7 +80,8 @@ public class ServerFacade {
     }
 
     public Collection<GameData> listGames() throws Exception {
-        throw new Exception("not implemented");
+        ListGamesResult listGamesResult = makeRequest("GET", "/game", null, ListGamesResult.class);
+        return listGamesResult.games();
     }
 
     public void joinGame() throws Exception {
