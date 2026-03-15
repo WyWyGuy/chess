@@ -118,12 +118,26 @@ public class ServerFacadeTests {
 
     @Test
     public void clientCreateGameSuccess() {
-
+        try {
+            AuthData received = serverFacade.register("WyWyGuy", "MyPassword", "wywyguy@byu.edu");
+            int gameID = serverFacade.createGame("WyWyGame");
+            Assertions.assertEquals(1, gameID);
+        } catch (Exception e) {
+            Assertions.fail();
+        }
     }
 
     @Test
     public void clientCreateGameFailedNullName() {
-        
+        try {
+            AuthData received = serverFacade.register("WyWyGuy", "MyPassword", "wywyguy@byu.edu");
+        } catch (Exception e) {
+            Assertions.fail();
+        }
+        Assertions.assertThrows(Exception.class,
+                () -> {
+                    int gameID = serverFacade.createGame(null);
+                });
     }
 
 }
