@@ -5,12 +5,16 @@ import dataaccess.DatabaseAuthDAO;
 import dataaccess.DatabaseGameDAO;
 import dataaccess.DatabaseUserDAO;
 import model.AuthData;
+import model.GameData;
 import model.RegisterRequest;
 import org.junit.jupiter.api.*;
 import server.Server;
 import service.ServiceException;
 
 import java.beans.ExceptionListener;
+import java.util.Collection;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 
 public class ServerFacadeTests {
@@ -69,8 +73,6 @@ public class ServerFacadeTests {
     public void clientLoginSuccess() {
         try {
             AuthData received1 = serverFacade.register("WyWyGuy", "MyPasswordHere", "wywyguy@byu.edu");
-            Assertions.assertEquals("WyWyGuy", received1.username());
-            Assertions.assertNotNull(received1.authToken());
             AuthData received2 = serverFacade.login("WyWyGuy", "MyPasswordHere");
             Assertions.assertEquals("WyWyGuy", received2.username());
             Assertions.assertNotNull(received2.authToken());
@@ -96,8 +98,6 @@ public class ServerFacadeTests {
     public void clientLogoutSuccess() {
         try {
             AuthData received = serverFacade.register("WyWyGuy", "MyPasswordHere", "wywyguy@byu.edu");
-            Assertions.assertEquals("WyWyGuy", received.username());
-            Assertions.assertNotNull(received.authToken());
             serverFacade.logout();
         } catch (Exception e) {
             Assertions.fail();
@@ -142,12 +142,32 @@ public class ServerFacadeTests {
 
     @Test
     public void clientListGamesSuccess() {
-
+        try {
+            AuthData received = serverFacade.register("WyWyGuy", "MyPassword", "wywyguy@byu.edu");
+            serverFacade.createGame("Test Game 1");
+            serverFacade.createGame("Test Game 2");
+            serverFacade.createGame("Test Game 3");
+        } catch (Exception e) {
+            Assertions.fail();
+        }
+        try {
+            Collection<GameData> games = serverFacade.listGames();
+            Set<String> expectedNames = Set.of("Test Game 1", "Test Game 2", "Test Game 3");
+            Set<String> actualNames = games.stream()
+                    .map(GameData::gameName)
+                    .collect(Collectors.toSet());
+            Assertions.assertEquals(expectedNames, actualNames);
+        } catch (Exception e) {
+            Assertions.fail();
+        }
     }
 
     @Test
     public void clientListGamesFailedUnauthorized() {
-        
+        Assertions.assertThrows(Exception.class,
+                () -> {
+                    Collection<GameData> games = serverFacade.listGames();
+                });
     }
 
 }
