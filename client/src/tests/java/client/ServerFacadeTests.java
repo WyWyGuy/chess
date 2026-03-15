@@ -116,4 +116,14 @@ public class ServerFacadeTests {
                 });
     }
 
+    @Test
+    public void clientCreateGameSuccess() {
+
+    }
+
+    @Test
+    public void clientCreateGameFailedNullName() {
+        
+    }
+
 }

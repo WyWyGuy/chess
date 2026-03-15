@@ -73,8 +73,10 @@ public class ServerFacade {
         this.authToken = null;
     }
 
-    public int createGame() throws Exception {
-        throw new Exception("not implemented");
+    public int createGame(String gameName) throws Exception {
+        CreateGameRequest createGameRequest = new CreateGameRequest(gameName);
+        CreateGameResult createGameResult = makeRequest("POST", "/game", createGameRequest, CreateGameResult.class);
+        return createGameResult.gameID();
     }
 
     public Collection<GameData> listGames() throws Exception {
