@@ -53,7 +53,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void clientRegisterFail() {
+    public void clientRegisterFailDuplicateUser() {
         try {
             AuthData received1 = serverFacade.register("WyWyGuy", "IWasFirst", "wywyguy@byu.edu");
         } catch (Exception e) {
@@ -62,6 +62,33 @@ public class ServerFacadeTests {
         Assertions.assertThrows(Exception.class,
                 () -> {
                     AuthData received2 = serverFacade.register("WyWyGuy", "IWantYourUsername", "wywyguy@byu.edu");
+                });
+    }
+
+    @Test
+    public void clientLoginSuccess() {
+        try {
+            AuthData received1 = serverFacade.register("WyWyGuy", "MyPasswordHere", "wywyguy@byu.edu");
+            Assertions.assertEquals("WyWyGuy", received1.username());
+            Assertions.assertNotNull(received1.authToken());
+            AuthData received2 = serverFacade.login("WyWyGuy", "MyPasswordHere");
+            Assertions.assertEquals("WyWyGuy", received2.username());
+            Assertions.assertNotNull(received2.authToken());
+        } catch (Exception e) {
+            Assertions.fail();
+        }
+    }
+
+    @Test
+    public void clientLoginFailWrongPassword() {
+        try {
+            AuthData received1 = serverFacade.register("WyWyGuy", "MyPasswordHere", "wywyguy@byu.edu");
+        } catch (Exception e) {
+            Assertions.fail();
+        }
+        Assertions.assertThrows(Exception.class,
+                () -> {
+                    AuthData received2 = serverFacade.login("WyWyGuy", "IWantYourAccount!");
                 });
     }
 
