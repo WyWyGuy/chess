@@ -1,5 +1,6 @@
 package client;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import model.*;
 import org.junit.jupiter.api.Assertions;
@@ -84,8 +85,9 @@ public class ServerFacade {
         return listGamesResult.games();
     }
 
-    public void joinGame() throws Exception {
-        throw new Exception("not implemented");
+    public void joinGame(ChessGame.TeamColor color, int gameID) throws Exception {
+        JoinGameRequest joinGameRequest = new JoinGameRequest(color, gameID);
+        makeRequest("PUT", "/game", joinGameRequest, null);
     }
 
 }

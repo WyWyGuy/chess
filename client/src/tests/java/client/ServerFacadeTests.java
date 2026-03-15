@@ -170,4 +170,14 @@ public class ServerFacadeTests {
                 });
     }
 
+    @Test
+    public void clientJoinGameSuccess() {
+
+    }
+
+    @Test
+    public void clientJoinGameFailedInvalidGameID() {
+        
+    }
+
 }
