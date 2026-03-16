@@ -33,7 +33,11 @@ public class UserInterface {
     }
 
     private void executeHelp() {
-
+        System.out.println("Commands:");
+        System.out.println("Help - shows this menu");
+        System.out.println("Login - login to the chess server");
+        System.out.println("Quit - exit the program");
+        System.out.println("Register - register a new user on the chess server");
     }
 
     private void executeLogin() {
@@ -41,6 +45,6 @@ public class UserInterface {
     }
 
     private void executeRegister() {
-        
+
     }
 }
