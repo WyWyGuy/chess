@@ -1,9 +1,9 @@
-package client;
+package ui;
 
 import chess.ChessGame;
+import client.ServerFacade;
 import model.GameData;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;

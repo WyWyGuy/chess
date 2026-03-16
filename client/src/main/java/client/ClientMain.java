@@ -1,6 +1,6 @@
 package client;
 
-import chess.*;
+import ui.UserInterface;
 
 public class ClientMain {
 
