@@ -40,6 +40,7 @@ public class ServerFacadeTests {
     }
 
     @BeforeEach
+    @AfterEach
     void wipeDatabase() throws DataAccessException {
         userDAO.clear();
         authDAO.clear();

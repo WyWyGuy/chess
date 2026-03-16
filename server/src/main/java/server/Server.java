@@ -76,7 +76,7 @@ public class Server {
             ctx.result(gson.toJson(registerResult));
         } catch (ServiceException e) {
             ctx.status(e.getStatusCode());
-            ctx.result(gson.toJson(new Message("Error: unauthorized")));
+            ctx.result(gson.toJson(new Message("Error: already taken")));
         } catch (Exception e) {
             ctx.status(500);
             ctx.result(gson.toJson(new Message(e.getMessage())));
