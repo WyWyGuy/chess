@@ -14,6 +14,7 @@ public class UserInterface {
     private static Scanner scanner = new Scanner(System.in);
     private List<GameData> games;
     private String username;
+    private ChessDisplay chessDisplay = new ChessDisplay();
 
     public UserInterface(String hostname, int port) {
         serverFacade = new ServerFacade(hostname, port);
@@ -53,12 +54,12 @@ public class UserInterface {
         }
     }
 
-    private void gameMenu(int gameID) {
-        System.out.println("GAME MENU CALLED " + gameID);
+    private void gameMenu(int gameID, boolean isWhite) {
+        chessDisplay.drawBoard(gameID, isWhite);
     }
 
     private void observeMenu(int gameID) {
-        System.out.println("OBSERVE MENU CALLED " + gameID);
+        chessDisplay.drawBoard(gameID, true);
     }
 
     private boolean executeQuit() {
@@ -191,15 +192,15 @@ public class UserInterface {
         GameData game = games.get(gameInt - 1);
         int gameID = game.gameID();
         if (team == ChessGame.TeamColor.WHITE && Objects.equals(game.whiteUsername(), username)) {
-            gameMenu(gameID);
+            gameMenu(gameID, true);
             return;
         } else if (team == ChessGame.TeamColor.BLACK && Objects.equals(game.blackUsername(), username)) {
-            gameMenu(gameID);
+            gameMenu(gameID, false);
             return;
         }
         try {
             serverFacade.joinGame(team, gameID);
-            gameMenu(gameID);
+            gameMenu(gameID, (team == ChessGame.TeamColor.WHITE ? true : false));
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
