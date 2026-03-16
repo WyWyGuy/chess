@@ -16,11 +16,11 @@ public class AuthService {
 
     public LoginResult login(LoginRequest request) throws DataAccessException, ServiceException {
         if (!userDAO.userExists(request.username())) {
-            throw new ServiceException("unauthorized", 401);
+            throw new ServiceException("Error: unauthorized", 401);
         }
         UserData user = userDAO.getUser(request.username());
         if (!BCrypt.checkpw(request.password(), user.password())) {
-            throw new ServiceException("unauthorized", 401);
+            throw new ServiceException("Error: unauthorized", 401);
         }
         AuthData auth = new AuthData(UUID.randomUUID().toString(), request.username());
         authDAO.createAuth(auth);
@@ -29,7 +29,7 @@ public class AuthService {
 
     public void logout(String authToken) throws DataAccessException, ServiceException {
         if (!authDAO.authExists(authToken)) {
-            throw new ServiceException("unauthorized", 401);
+            throw new ServiceException("Error: unauthorized", 401);
         }
         authDAO.deleteAuth(authToken);
     }

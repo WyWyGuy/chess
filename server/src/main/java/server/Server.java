@@ -50,7 +50,7 @@ public class Server {
             ctx.result(gson.toJson(new Object()));
         } catch (Exception e) {
             ctx.status(500);
-            ctx.result(gson.toJson(new Message("Error: " + e.getMessage())));
+            ctx.result(gson.toJson(new Message(e.getMessage())));
         }
     }
 
@@ -79,7 +79,7 @@ public class Server {
             ctx.result(gson.toJson(new Message("Error: unauthorized")));
         } catch (Exception e) {
             ctx.status(500);
-            ctx.result(gson.toJson(new Message("Error: " + e.getMessage())));
+            ctx.result(gson.toJson(new Message(e.getMessage())));
         }
     }
 
@@ -107,7 +107,7 @@ public class Server {
             ctx.result(gson.toJson(new Message("Error: unauthorized")));
         } catch (Exception e) {
             ctx.status(500);
-            ctx.result(gson.toJson(new Message("Error: " + e.getMessage())));
+            ctx.result(gson.toJson(new Message(e.getMessage())));
         }
     }
 
@@ -127,7 +127,7 @@ public class Server {
             ctx.result(gson.toJson(new Message("Error: unauthorized")));
         } catch (Exception e) {
             ctx.status(500);
-            ctx.result(gson.toJson(new Message("Error: " + e.getMessage())));
+            ctx.result(gson.toJson(new Message(e.getMessage())));
         }
     }
 
@@ -160,7 +160,7 @@ public class Server {
             ctx.result(gson.toJson(new Message("Error: unauthorized")));
         } catch (Exception e) {
             ctx.status(500);
-            ctx.result(gson.toJson(new Message("Error: " + e.getMessage())));
+            ctx.result(gson.toJson(new Message(e.getMessage())));
         }
     }
 
@@ -180,7 +180,7 @@ public class Server {
             ctx.result(gson.toJson(new Message("Error: unauthorized")));
         } catch (Exception e) {
             ctx.status(500);
-            ctx.result(gson.toJson(new Message("Error: " + e.getMessage())));
+            ctx.result(gson.toJson(new Message(e.getMessage())));
         }
     }
 
@@ -214,7 +214,7 @@ public class Server {
             ctx.result(gson.toJson(new Message("Error: unauthorized")));
         } catch (Exception e) {
             ctx.status(500);
-            ctx.result(gson.toJson(new Message("Error: " + e.getMessage())));
+            ctx.result(gson.toJson(new Message(e.getMessage())));
         }
     }
 }

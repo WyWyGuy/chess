@@ -13,7 +13,7 @@ public class GameService {
 
     public CreateGameResult createGame(CreateGameRequest request, String authToken) throws DataAccessException, ServiceException {
         if (!authDAO.authExists(authToken)) {
-            throw new ServiceException("unauthorized", 401);
+            throw new ServiceException("Error: unauthorized", 401);
         }
         ChessGame game = new ChessGame();
         int id = gameDAO.createGame(new GameData(0, null, null, request.gameName(), game));
@@ -22,7 +22,7 @@ public class GameService {
 
     public ListGamesResult listGames(String authToken) throws DataAccessException, ServiceException {
         if (!authDAO.authExists(authToken)) {
-            throw new ServiceException("unauthorized", 401);
+            throw new ServiceException("Error: unauthorized", 401);
         }
         Collection<GameData> allGames = gameDAO.listGames();
         return new ListGamesResult(allGames);
@@ -30,11 +30,11 @@ public class GameService {
 
     public void joinGame(JoinGameRequest request, String authToken) throws DataAccessException, ServiceException {
         if (!authDAO.authExists(authToken)) {
-            throw new ServiceException("unauthorized", 401);
+            throw new ServiceException("Error: unauthorized", 401);
         }
         AuthData auth = authDAO.getAuth(authToken);
         if (!gameDAO.gameExists(request.gameID())) {
-            throw new DataAccessException("Game " + request.gameID() + " does not exist");
+            throw new DataAccessException("Error: game " + request.gameID() + " does not exist");
         }
         GameData game = gameDAO.getGame(request.gameID());
         if ((request.playerColor() == ChessGame.TeamColor.WHITE) && game.whiteUsername() == null) {
@@ -42,7 +42,7 @@ public class GameService {
         } else if ((request.playerColor() == ChessGame.TeamColor.BLACK) && game.blackUsername() == null) {
             gameDAO.updateBlackPlayer(request.gameID(), auth.username());
         } else {
-            throw new ServiceException("already taken", 403);
+            throw new ServiceException("Error: already taken", 403);
         }
     }
 

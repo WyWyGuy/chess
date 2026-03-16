@@ -29,9 +29,9 @@ public class DatabaseGameDAO implements GameDAO {
             try {
                 conn.rollback();
             } catch (SQLException ex) {
-                throw new DataAccessException("Could not rollback games table clearing", ex);
+                throw new DataAccessException("Error: could not rollback games table clearing", ex);
             }
-            throw new DataAccessException("Could not clear the games table", e);
+            throw new DataAccessException("Error: could not clear the games table", e);
         }
     }
 
@@ -43,7 +43,7 @@ public class DatabaseGameDAO implements GameDAO {
             ResultSet rs = stmt.executeQuery();
             return rs.next();
         } catch (SQLException e) {
-            throw new DataAccessException("Could not determine if game " + id + " exists", e);
+            throw new DataAccessException("Error: could not determine if game " + id + " exists", e);
         }
     }
 
@@ -62,9 +62,9 @@ public class DatabaseGameDAO implements GameDAO {
                 ChessGame col5game = gson.fromJson(col5, ChessGame.class);
                 return new GameData(col1, col2, col3, col4, col5game);
             }
-            throw new DataAccessException("Could not find game " + id);
+            throw new DataAccessException("Error: could not find game " + id);
         } catch (SQLException e) {
-            throw new DataAccessException("Could not return game " + id, e);
+            throw new DataAccessException("Error: could not return game " + id, e);
         }
     }
 
@@ -84,10 +84,10 @@ public class DatabaseGameDAO implements GameDAO {
             if (rs.next()) {
                 return rs.getInt(1);
             } else {
-                throw new DataAccessException("Creating game " + game.game() + " did not return a game ID.");
+                throw new DataAccessException("Error: creating game " + game.game() + " did not return a game ID.");
             }
         } catch (SQLException e) {
-            throw new DataAccessException("Could not create game " + game.gameName(), e);
+            throw new DataAccessException("Error: could not create game " + game.gameName(), e);
         }
     }
 
@@ -108,7 +108,7 @@ public class DatabaseGameDAO implements GameDAO {
             }
             return games;
         } catch (SQLException e) {
-            throw new DataAccessException("Could not return games list", e);
+            throw new DataAccessException("Error: could not return games list", e);
         }
     }
 
@@ -120,10 +120,10 @@ public class DatabaseGameDAO implements GameDAO {
             stmt.setInt(2, id);
             int changed = stmt.executeUpdate();
             if (changed != 1) {
-                throw new DataAccessException("Updating (white) game " + id + " should have modified one row but " + changed + " were changed");
+                throw new DataAccessException("Error: updating (white) game " + id + " should have modified one row but " + changed + " were changed");
             }
         } catch (SQLException e) {
-            throw new DataAccessException("Could not update white player in game " + id, e);
+            throw new DataAccessException("Error: could not update white player in game " + id, e);
         }
     }
 
@@ -135,10 +135,10 @@ public class DatabaseGameDAO implements GameDAO {
             stmt.setInt(2, id);
             int changed = stmt.executeUpdate();
             if (changed != 1) {
-                throw new DataAccessException("Updating (black) game " + id + " should have modified one row but " + changed + " were changed");
+                throw new DataAccessException("Error: updating (black) game " + id + " should have modified one row but " + changed + " were changed");
             }
         } catch (SQLException e) {
-            throw new DataAccessException("Could not update black player in game " + id, e);
+            throw new DataAccessException("Error: could not update black player in game " + id, e);
         }
     }
 

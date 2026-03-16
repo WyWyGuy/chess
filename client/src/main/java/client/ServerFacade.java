@@ -31,6 +31,16 @@ public class ServerFacade {
     }
 
     private <T> T makeRequest(String method, String endpoint, Object request, Class<T> responseClass) throws Exception {
+        try {
+            HttpRequest ping = HttpRequest.newBuilder()
+                    .uri(new URI("http://" + hostname + ":" + port + "/"))
+                    .timeout(java.time.Duration.ofMillis(TIMEOUT))
+                    .GET()
+                    .build();
+            HttpResponse<String> pingResult = httpClient.send(ping, HttpResponse.BodyHandlers.ofString());
+        } catch (Exception e) {
+            throw new Exception("Error: could not connect to the server");
+        }
         String requestString = gson.toJson(request);
         HttpRequest.Builder builder = HttpRequest.newBuilder()
                 .uri(new URI("http://" + hostname + ":" + port + endpoint))
@@ -47,7 +57,8 @@ public class ServerFacade {
         HttpRequest httpRequest = builder.build();
         HttpResponse<String> httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
         if (httpResponse.statusCode() != 200) {
-            throw new Exception(httpResponse.body());
+            Message error = gson.fromJson(httpResponse.body(), Message.class);
+            throw new Exception(error.message());
         }
         if (responseClass == null) {
             return null;

@@ -41,7 +41,16 @@ public class UserInterface {
     }
 
     private void executeLogin() {
-
+        System.out.print("Username: ");
+        String username = scanner.nextLine().trim();
+        System.out.print("Password: ");
+        String password = scanner.nextLine().trim();
+        try {
+            serverFacade.login(username, password);
+            System.out.println("Successfully logged in as " + username);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     private void executeRegister() {

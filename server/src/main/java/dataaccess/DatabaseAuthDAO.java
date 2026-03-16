@@ -27,9 +27,9 @@ public class DatabaseAuthDAO implements AuthDAO {
             try {
                 conn.rollback();
             } catch (SQLException ex) {
-                throw new DataAccessException("Could not rollback auths table clearing", ex);
+                throw new DataAccessException("Error: could not rollback auths table clearing", ex);
             }
-            throw new DataAccessException("Could not clear the auths table", e);
+            throw new DataAccessException("Error: could not clear the auths table", e);
         }
     }
 
@@ -41,7 +41,7 @@ public class DatabaseAuthDAO implements AuthDAO {
             ResultSet rs = stmt.executeQuery();
             return rs.next();
         } catch (SQLException e) {
-            throw new DataAccessException("Could not determine if " + authToken + " exists", e);
+            throw new DataAccessException("Error: could not determine if " + authToken + " exists", e);
         }
     }
 
@@ -56,9 +56,9 @@ public class DatabaseAuthDAO implements AuthDAO {
                 String col2 = rs.getString("username");
                 return new AuthData(col1, col2);
             }
-            throw new DataAccessException("Could not find auth " + authToken);
+            throw new DataAccessException("Error: could not find auth " + authToken);
         } catch (SQLException e) {
-            throw new DataAccessException("Could not return auth " + authToken, e);
+            throw new DataAccessException("Error: could not return auth " + authToken, e);
         }
     }
 
@@ -70,7 +70,7 @@ public class DatabaseAuthDAO implements AuthDAO {
             stmt.setString(2, auth.username());
             stmt.executeUpdate();
         } catch (SQLException e) {
-            throw new DataAccessException("Could not create auth " + auth.authToken(), e);
+            throw new DataAccessException("Error: could not create auth " + auth.authToken(), e);
         }
     }
 
@@ -81,10 +81,10 @@ public class DatabaseAuthDAO implements AuthDAO {
             stmt.setString(1, authToken);
             int deleted = stmt.executeUpdate();
             if (deleted != 1) {
-                throw new DataAccessException("Expected to delete " + authToken + " but " + deleted + " auths were deleted");
+                throw new DataAccessException("Error: expected to delete " + authToken + " but " + deleted + " auths were deleted");
             }
         } catch (SQLException e) {
-            throw new DataAccessException("Could not delete auth " + authToken, e);
+            throw new DataAccessException("Error: could not delete auth " + authToken, e);
         }
     }
 

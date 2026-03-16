@@ -15,7 +15,7 @@ public class UserService {
 
     public RegisterResult register(RegisterRequest request) throws DataAccessException, ServiceException {
         if (userDAO.userExists(request.username())) {
-            throw new ServiceException("already taken", 403);
+            throw new ServiceException("Error: already taken", 403);
         }
         userDAO.createUser(new UserData(request.username(), request.password(), request.email()));
         AuthData auth = new AuthData(UUID.randomUUID().toString(), request.username());
