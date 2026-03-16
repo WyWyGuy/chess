@@ -5,6 +5,7 @@ import model.GameData;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Scanner;
 
 public class UserInterface {
@@ -12,6 +13,7 @@ public class UserInterface {
     private static ServerFacade serverFacade;
     private static Scanner scanner = new Scanner(System.in);
     private List<GameData> games;
+    private String username;
 
     public UserInterface(String hostname, int port) {
         serverFacade = new ServerFacade(hostname, port);
@@ -43,15 +45,20 @@ public class UserInterface {
                     running = executeLogout();
                 }
                 case "help" -> executeMainHelp();
-                case "create game" -> createGame();
-                case "list games" -> listGames();
-                case "play game" -> playGame();
+                case "create game" -> executeCreateGame();
+                case "list games" -> executeListGames();
+                case "play game" -> executePlayGame();
+                case "observe game" -> executeObserveGame();
             }
         }
     }
 
-    private void gameMenu() {
-        System.out.println("GAME MENU CALLED");
+    private void gameMenu(int gameID) {
+        System.out.println("GAME MENU CALLED " + gameID);
+    }
+
+    private void observeMenu(int gameID) {
+        System.out.println("OBSERVE MENU CALLED " + gameID);
     }
 
     private boolean executeQuit() {
@@ -63,6 +70,8 @@ public class UserInterface {
         System.out.println("Logging out...");
         try {
             serverFacade.logout();
+            games = null;
+            username = null;
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -85,6 +94,7 @@ public class UserInterface {
         try {
             serverFacade.login(username, password);
             System.out.println("Successfully logged in as " + username);
+            this.username = username;
             mainMenu();
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -117,7 +127,7 @@ public class UserInterface {
         System.out.println("Play Game - join a game as the white or black player");
     }
 
-    private void createGame() {
+    private void executeCreateGame() {
         System.out.print("Game Name: ");
         String gameName = scanner.nextLine().trim();
         try {
@@ -128,7 +138,7 @@ public class UserInterface {
         }
     }
 
-    private void listGames() {
+    private void executeListGames() {
         try {
             games = serverFacade.listGames();
             int i = 1;
@@ -146,9 +156,13 @@ public class UserInterface {
         }
     }
 
-    private void playGame() {
+    private void executePlayGame() {
         if (games == null) {
-            listGames();
+            executeListGames();
+        }
+        if (games.isEmpty()) {
+            System.out.println("There are no games to join");
+            return;
         }
         int gameInt;
         int numGames = games.size();
@@ -174,12 +188,45 @@ public class UserInterface {
             System.out.println("Invalid team color");
             return;
         }
-        int gameID = games.get(gameInt - 1).gameID();
+        GameData game = games.get(gameInt - 1);
+        int gameID = game.gameID();
+        if (team == ChessGame.TeamColor.WHITE && Objects.equals(game.whiteUsername(), username)) {
+            gameMenu(gameID);
+            return;
+        } else if (team == ChessGame.TeamColor.BLACK && Objects.equals(game.blackUsername(), username)) {
+            gameMenu(gameID);
+            return;
+        }
         try {
             serverFacade.joinGame(team, gameID);
-            gameMenu();
+            gameMenu(gameID);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    private void executeObserveGame() {
+        if (games == null) {
+            executeListGames();
+        }
+        if (games.isEmpty()) {
+            System.out.println("There are no games to join");
+            return;
+        }
+        int gameInt;
+        int numGames = games.size();
+        System.out.print("Enter game number: ");
+        String gameNumber = scanner.nextLine().trim();
+        try {
+            gameInt = Integer.parseInt(gameNumber);
+            if (gameInt > numGames || gameInt < 1) {
+                throw new Exception("Invalid game number");
+            }
+        } catch (Exception e) {
+            System.out.println("Invalid game number");
+            return;
+        }
+        int gameID = games.get(gameInt - 1).gameID();
+        observeMenu(gameID);
     }
 }
