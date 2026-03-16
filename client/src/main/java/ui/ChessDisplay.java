@@ -5,9 +5,7 @@ import java.util.Set;
 import static ui.EscapeSequences.*;
 
 public class ChessDisplay {
-
-    //This is a fake change.
-
+    
     private String boarderBg = SET_BG_COLOR_LIGHT_GREY;
     private String boarderColor = SET_TEXT_COLOR_BLACK;
     private String whiteBg = SET_BG_COLOR_WHITE;
