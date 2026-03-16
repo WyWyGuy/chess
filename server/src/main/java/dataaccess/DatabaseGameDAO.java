@@ -2,12 +2,12 @@ package dataaccess;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
-import model.AuthData;
 import model.GameData;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 public class DatabaseGameDAO implements GameDAO {
 
@@ -92,11 +92,11 @@ public class DatabaseGameDAO implements GameDAO {
     }
 
     @Override
-    public Collection<GameData> listGames() throws DataAccessException {
+    public List<GameData> listGames() throws DataAccessException {
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement("SELECT * FROM games")) {
             ResultSet rs = stmt.executeQuery();
-            Collection<GameData> games = new ArrayList<GameData>();
+            List<GameData> games = new ArrayList<GameData>();
             while (rs.next()) {
                 int col1 = rs.getInt("gameID");
                 String col2 = rs.getString("whiteUsername");

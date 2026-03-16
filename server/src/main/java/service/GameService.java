@@ -4,7 +4,7 @@ import chess.ChessGame;
 import dataaccess.*;
 import model.*;
 
-import java.util.Collection;
+import java.util.List;
 
 public class GameService {
 
@@ -24,7 +24,7 @@ public class GameService {
         if (!authDAO.authExists(authToken)) {
             throw new ServiceException("Error: unauthorized", 401);
         }
-        Collection<GameData> allGames = gameDAO.listGames();
+        List<GameData> allGames = gameDAO.listGames();
         return new ListGamesResult(allGames);
     }
 

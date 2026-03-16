@@ -4,8 +4,8 @@ import model.GameData;
 import model.UserData;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 public class MemoryGameDAO implements GameDAO {
 
@@ -38,8 +38,8 @@ public class MemoryGameDAO implements GameDAO {
     }
 
     @Override
-    public Collection<GameData> listGames() throws DataAccessException {
-        Collection<GameData> allGames = new ArrayList<GameData>();
+    public List<GameData> listGames() throws DataAccessException {
+        List<GameData> allGames = new ArrayList<GameData>();
         allGames.addAll(this.games.values());
         return allGames;
     }

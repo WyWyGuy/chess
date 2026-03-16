@@ -3,18 +3,13 @@ package client;
 import chess.ChessGame;
 import com.google.gson.Gson;
 import model.*;
-import org.junit.jupiter.api.Assertions;
 
-import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.http.HttpClient;
-import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-import java.util.Collection;
-import java.util.Optional;
+import java.util.List;
 
 public class ServerFacade {
 
@@ -91,7 +86,7 @@ public class ServerFacade {
         return createGameResult.gameID();
     }
 
-    public Collection<GameData> listGames() throws Exception {
+    public List<GameData> listGames() throws Exception {
         ListGamesResult listGamesResult = makeRequest("GET", "/game", null, ListGamesResult.class);
         return listGamesResult.games();
     }

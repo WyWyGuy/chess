@@ -2,8 +2,7 @@ package dataaccess;
 
 import model.GameData;
 
-import javax.xml.crypto.Data;
-import java.util.Collection;
+import java.util.List;
 
 public interface GameDAO {
 
@@ -15,7 +14,7 @@ public interface GameDAO {
 
     int createGame(GameData game) throws DataAccessException;
 
-    Collection<GameData> listGames() throws DataAccessException;
+    List<GameData> listGames() throws DataAccessException;
 
     void updateWhitePlayer(int id, String player) throws DataAccessException;
 
