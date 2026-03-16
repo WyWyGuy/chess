@@ -1,5 +1,8 @@
 package client;
 
+import model.GameData;
+
+import java.util.Collection;
 import java.util.Scanner;
 
 public class UserInterface {
@@ -38,6 +41,7 @@ public class UserInterface {
                 }
                 case "help" -> executeMainHelp();
                 case "create game" -> createGame();
+                case "list games" -> listGames();
             }
         }
     }
@@ -111,6 +115,21 @@ public class UserInterface {
         try {
             serverFacade.createGame(gameName);
             System.out.println("Successfully created game: " + gameName);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private void listGames() {
+        try {
+            Collection<GameData> games = serverFacade.listGames();
+            int i = 1;
+            for (GameData game : games) {
+                System.out.println(i + ") " + game.gameName());
+                System.out.println("   - White: " + (game.whiteUsername() != null ? game.whiteUsername() : "Open"));
+                System.out.println("   - Black: " + (game.blackUsername() != null ? game.blackUsername() : "Open"));
+                i += 1;
+            }
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

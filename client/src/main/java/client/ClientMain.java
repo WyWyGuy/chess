@@ -9,4 +9,5 @@ public class ClientMain {
         UserInterface userInterface = new UserInterface(args[0], Integer.parseInt(args[1]));
         userInterface.startMenu();
     }
+    
 }
