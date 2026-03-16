@@ -158,24 +158,11 @@ public class UserInterface {
     }
 
     private void executePlayGame() {
-        if (games == null) {
-            executeListGames();
-        }
-        if (games.isEmpty()) {
-            System.out.println("There are no games to join");
+        if (noGames()) {
             return;
         }
-        int gameInt;
-        int numGames = games.size();
-        System.out.print("Enter game number: ");
-        String gameNumber = scanner.nextLine().trim();
-        try {
-            gameInt = Integer.parseInt(gameNumber);
-            if (gameInt > numGames || gameInt < 1) {
-                throw new Exception("Invalid game number");
-            }
-        } catch (Exception e) {
-            System.out.println("Invalid game number");
+        int gameInt = getGameInt();
+        if (gameInt == -1) {
             return;
         }
         System.out.print("Play as (white/black): ");
@@ -207,13 +194,29 @@ public class UserInterface {
     }
 
     private void executeObserveGame() {
+        if (noGames()) {
+            return;
+        }
+        int gameInt = getGameInt();
+        if (gameInt == -1) {
+            return;
+        }
+        int gameID = games.get(gameInt - 1).gameID();
+        observeMenu(gameID);
+    }
+
+    private boolean noGames() {
         if (games == null) {
             executeListGames();
         }
         if (games.isEmpty()) {
             System.out.println("There are no games to join");
-            return;
+            return true;
         }
+        return false;
+    }
+
+    private int getGameInt() {
         int gameInt;
         int numGames = games.size();
         System.out.print("Enter game number: ");
@@ -225,9 +228,8 @@ public class UserInterface {
             }
         } catch (Exception e) {
             System.out.println("Invalid game number");
-            return;
+            return -1;
         }
-        int gameID = games.get(gameInt - 1).gameID();
-        observeMenu(gameID);
+        return gameInt;
     }
 }

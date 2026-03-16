@@ -6,15 +6,15 @@ import static ui.EscapeSequences.*;
 
 public class ChessDisplay {
 
-    private String BOARDER_BG = SET_BG_COLOR_LIGHT_GREY;
-    private String BOARDER_COLOR = SET_TEXT_COLOR_BLACK;
-    private String WHITE_BG = SET_BG_COLOR_WHITE;
-    private String WHITE_COLOR = SET_TEXT_COLOR_WHITE;
-    private String BLACK_BG = SET_BG_COLOR_BLACK;
-    private String BLACK_COLOR = SET_TEXT_COLOR_BLACK;
+    private String boarderBg = SET_BG_COLOR_LIGHT_GREY;
+    private String boarderColor = SET_TEXT_COLOR_BLACK;
+    private String whiteBg = SET_BG_COLOR_WHITE;
+    private String whiteColor = SET_TEXT_COLOR_WHITE;
+    private String blackBg = SET_BG_COLOR_BLACK;
+    private String blackColor = SET_TEXT_COLOR_BLACK;
 
     public void drawBoard(int gameID, boolean whitePerspective) {
-        Set<String> WIDE_CHARACTERS = Set.of(
+        Set<String> wideCharacters = Set.of(
                 WHITE_PAWN, WHITE_ROOK, WHITE_KNIGHT, WHITE_BISHOP, WHITE_QUEEN, WHITE_KING,
                 BLACK_PAWN, BLACK_ROOK, BLACK_KNIGHT, BLACK_BISHOP, BLACK_QUEEN, BLACK_KING
         );
@@ -31,19 +31,19 @@ public class ChessDisplay {
 
         boolean bgColorWhite = true;
 
-        System.out.print(BOARDER_COLOR + BOARDER_BG);
+        System.out.print(boarderColor + boarderBg);
         for (int i = 0; i < letters.length; i++) {
             System.out.print(" " + letters[i] + " ");
         }
         System.out.print(RESET_TEXT_COLOR + RESET_BG_COLOR + "\n");
 
         for (int i = 0; i < numbers.length; i++) {
-            System.out.print(BOARDER_COLOR + BOARDER_BG);
+            System.out.print(boarderColor + boarderBg);
             System.out.print(" " + numbers[i] + " ");
 
             for (int j = 0; j < 8; j++) {
-                System.out.print(bgColorWhite ? WHITE_BG : BLACK_BG);
-                System.out.print(bgColorWhite ? BLACK_COLOR : WHITE_COLOR);
+                System.out.print(bgColorWhite ? whiteBg : blackBg);
+                System.out.print(bgColorWhite ? blackColor : whiteColor);
                 String[] row = {" ", " ", " ", " ", " ", " ", " ", " "};
                 if (i == 0) {
                     row = whitePerspective ? row8 : row1;
@@ -55,7 +55,7 @@ public class ChessDisplay {
                     row = whitePerspective ? row1 : row8;
                 }
                 String posChar = row[j];
-                if (WIDE_CHARACTERS.contains(posChar)) {
+                if (wideCharacters.contains(posChar)) {
                     System.out.print(posChar);
                 } else {
                     System.out.print(" " + posChar + " ");
@@ -65,12 +65,12 @@ public class ChessDisplay {
                 }
             }
 
-            System.out.print(BOARDER_COLOR + BOARDER_BG);
+            System.out.print(boarderColor + boarderBg);
             System.out.print(" " + numbers[i] + " ");
             System.out.print(RESET_TEXT_COLOR + RESET_BG_COLOR + "\n");
         }
 
-        System.out.print(BOARDER_COLOR + BOARDER_BG);
+        System.out.print(boarderColor + boarderBg);
         for (int i = 0; i < letters.length; i++) {
             System.out.print(" " + letters[i] + " ");
         }

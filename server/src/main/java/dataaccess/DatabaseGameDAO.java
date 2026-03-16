@@ -120,7 +120,9 @@ public class DatabaseGameDAO implements GameDAO {
             stmt.setInt(2, id);
             int changed = stmt.executeUpdate();
             if (changed != 1) {
-                throw new DataAccessException("Error: updating (white) game " + id + " should have modified one row but " + changed + " were changed");
+                throw new DataAccessException(
+                        "Error: updating (white) game " + id + " should have modified one row but " + changed + " were changed"
+                );
             }
         } catch (SQLException e) {
             throw new DataAccessException("Error: could not update white player in game " + id, e);
@@ -135,7 +137,9 @@ public class DatabaseGameDAO implements GameDAO {
             stmt.setInt(2, id);
             int changed = stmt.executeUpdate();
             if (changed != 1) {
-                throw new DataAccessException("Error: updating (black) game " + id + " should have modified one row but " + changed + " were changed");
+                throw new DataAccessException(
+                        "Error: updating (black) game " + id + " should have modified one row but " + changed + " were changed"
+                );
             }
         } catch (SQLException e) {
             throw new DataAccessException("Error: could not update black player in game " + id, e);
