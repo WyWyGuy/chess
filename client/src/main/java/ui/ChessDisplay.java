@@ -5,7 +5,7 @@ import java.util.Set;
 import static ui.EscapeSequences.*;
 
 public class ChessDisplay {
-    
+
     private String boarderBg = SET_BG_COLOR_LIGHT_GREY;
     private String boarderColor = SET_TEXT_COLOR_BLACK;
     private String whiteBg = SET_BG_COLOR_WHITE;
@@ -27,6 +27,18 @@ public class ChessDisplay {
         if (!whitePerspective) {
             reverse(letters);
             reverse(numbers);
+            reverse(row1);
+            reverse(row8);
+            // Must reverse the rows and row order when printing from black perspective
+            // So reverse each internal row, then the outer rows
+            // that way, the printing logic is always the same.
+            // Steps:
+            // 1) Load the board and create an 8x8 array of pieces from white perspective
+            // 2) If not white or observer, reverse all internal arrays and the order of the arrays
+            // 3) Loop through and print the board, referencing the array for what piece.
+            // 4) We may need to add logic for highlighting possible moves if the curr_position is in possible moves
+            // 5) Then we should perhaps keep i, j indices to track which positions should be highlighted
+            // 6) And we can do 7-i and 7-j to "reverse" them when we do the black perspective
         }
 
         boolean bgColorWhite = true;
