@@ -2,6 +2,7 @@ package ui;
 
 import chess.ChessGame;
 import client.ServerFacade;
+import client.WebSocketFacade;
 import model.GameData;
 
 import java.util.List;
@@ -11,13 +12,16 @@ import java.util.Scanner;
 public class UserInterface {
 
     private static ServerFacade serverFacade;
+    private static WebSocketFacade webSocketFacade;
     private static Scanner scanner = new Scanner(System.in);
     private List<GameData> games;
     private String username;
     private ChessDisplay chessDisplay = new ChessDisplay();
+    private int port;
 
     public UserInterface(String hostname, int port) {
         serverFacade = new ServerFacade(hostname, port);
+        this.port = port;
     }
 
     public void startMenu() {
@@ -55,7 +59,24 @@ public class UserInterface {
     }
 
     private void gameMenu(int gameID, boolean isWhite) {
-        chessDisplay.drawBoard(gameID, isWhite);
+        try {
+            webSocketFacade = new WebSocketFacade();
+            webSocketFacade.connect("ws://localhost:" + port + "/ws");
+            //webSocketFacade.join(gameID);
+            boolean running = true;
+            while (running) {
+                System.out.print("Enter a command (type 'help' for a list of commands): ");
+                String command = scanner.nextLine().trim().toLowerCase();
+                switch (command) {
+                    //case "leave" -> executeGameLeave();
+                    //case "help" -> executeGameHelp();
+                }
+                // chessDisplay.drawBoard(gameID, isWhite);
+            }
+        } catch (Exception e) {
+            System.out.println("An error occurred while trying to connect to the game");
+            System.out.println(e.getMessage());
+        }
     }
 
     private void observeMenu(int gameID) {
@@ -206,8 +227,12 @@ public class UserInterface {
     }
 
     private boolean noGames() {
-        if (games == null) {
-            executeListGames();
+        try {
+            if (games == null || games.size() != serverFacade.listGames().size()) {
+                executeListGames();
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
         if (games.isEmpty()) {
             System.out.println("There are no games to join");
