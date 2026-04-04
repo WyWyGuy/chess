@@ -7,7 +7,7 @@ import websocket.commands.UserGameCommand;
 public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsCloseHandler {
 
     private final Gson gson = new Gson();
-    private ConnectionHandler connectionHandler = new ConnectionHandler();
+    private ConnectionManager connectionManager = new ConnectionManager();
 
     @Override
     public void handleConnect(WsConnectContext ctx) {
