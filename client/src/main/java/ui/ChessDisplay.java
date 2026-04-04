@@ -29,6 +29,7 @@ public class ChessDisplay {
             reverse(numbers);
             reverse(row1);
             reverse(row8);
+            //TODO
             // Must reverse the rows and row order when printing from black perspective
             // So reverse each internal row, then the outer rows
             // that way, the printing logic is always the same.

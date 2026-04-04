@@ -3,6 +3,7 @@ package ui;
 import chess.ChessGame;
 import client.ServerFacade;
 import client.WebSocketFacade;
+import model.AuthData;
 import model.GameData;
 
 import java.util.List;
@@ -18,6 +19,7 @@ public class UserInterface {
     private String username;
     private ChessDisplay chessDisplay = new ChessDisplay();
     private int port;
+    private AuthData auth;
 
     public UserInterface(String hostname, int port) {
         serverFacade = new ServerFacade(hostname, port);
@@ -62,28 +64,27 @@ public class UserInterface {
         try {
             webSocketFacade = new WebSocketFacade();
             webSocketFacade.connect("ws://localhost:" + port + "/ws");
-            //webSocketFacade.join(gameID);
-            boolean running = true;
-            while (running) {
-                System.out.print("Enter a command (type 'help' for a list of commands): ");
-                String command = scanner.nextLine().trim().toLowerCase();
-                switch (command) {
-                    case "leave" -> executeGameLeave();
-                    case "help" -> executeGameHelp();
-                    case "redraw chess board" -> executeDrawChessBoard(gameID, isWhite);
-                    case "make move" -> executeMakeMove();
-                    case "resign" -> executeResign();
-                    case "highlight legal moves" -> executeHighlightMoves();
-                }
-            }
+            webSocketFacade.join(gameID, auth.authToken());
         } catch (Exception e) {
             System.out.println("An error occurred while trying to connect to the game");
-            System.out.println(e.getMessage());
+        }
+        boolean running = true;
+        while (running) {
+            System.out.print("Enter a command (type 'help' for a list of commands): ");
+            String command = scanner.nextLine().trim().toLowerCase();
+            switch (command) {
+                case "leave" -> executeGameLeave();
+                case "help" -> executeGameHelp();
+                case "redraw chess board" -> executeDrawChessBoard(gameID, isWhite);
+                case "make move" -> executeMakeMove();
+                case "resign" -> executeResign();
+                case "highlight legal moves" -> executeHighlightMoves();
+            }
         }
     }
 
     private void observeMenu(int gameID) {
-        chessDisplay.drawBoard(gameID, true);
+        //TODO
     }
 
     private boolean executeQuit() {
@@ -117,7 +118,7 @@ public class UserInterface {
         System.out.print("Password: ");
         String password = scanner.nextLine().trim();
         try {
-            serverFacade.login(username, password);
+            auth = serverFacade.login(username, password);
             System.out.println("Successfully logged in as " + username);
             this.username = username;
             mainMenu();
@@ -134,7 +135,7 @@ public class UserInterface {
         System.out.print("Email: ");
         String email = scanner.nextLine().trim();
         try {
-            serverFacade.register(username, password, email);
+            auth = serverFacade.register(username, password, email);
             System.out.println("Successfully registered new user: " + username);
             mainMenu();
         } catch (Exception e) {
@@ -273,5 +274,21 @@ public class UserInterface {
 
     private void executeDrawChessBoard(int gameID, boolean isWhite) {
         chessDisplay.drawBoard(gameID, isWhite);
+    }
+
+    private void executeGameLeave() {
+        //TODO
+    }
+
+    private void executeResign() {
+        //TODO
+    }
+
+    private void executeHighlightMoves() {
+        //TODO
+    }
+
+    private void executeMakeMove() {
+        //TODO
     }
 }
