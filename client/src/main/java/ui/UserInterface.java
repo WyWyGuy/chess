@@ -68,10 +68,13 @@ public class UserInterface {
                 System.out.print("Enter a command (type 'help' for a list of commands): ");
                 String command = scanner.nextLine().trim().toLowerCase();
                 switch (command) {
-                    //case "leave" -> executeGameLeave();
-                    //case "help" -> executeGameHelp();
+                    case "leave" -> executeGameLeave();
+                    case "help" -> executeGameHelp();
+                    case "redraw chess board" -> executeDrawChessBoard(gameID, isWhite);
+                    case "make move" -> executeMakeMove();
+                    case "resign" -> executeResign();
+                    case "highlight legal moves" -> executeHighlightMoves();
                 }
-                // chessDisplay.drawBoard(gameID, isWhite);
             }
         } catch (Exception e) {
             System.out.println("An error occurred while trying to connect to the game");
@@ -256,5 +259,19 @@ public class UserInterface {
             return -1;
         }
         return gameInt;
+    }
+
+    private void executeGameHelp() {
+        System.out.println("Commands:");
+        System.out.println("Help - shows this menu");
+        System.out.println("Highlight Legal Moves - render the chess board to show possible moves for a piece");
+        System.out.println("Leave - exit the current game");
+        System.out.println("Make Move - perform a move");
+        System.out.println("Redraw Chess Board - rerender the chess board in its current state");
+        System.out.println("Resign - resign from the current game");
+    }
+
+    private void executeDrawChessBoard(int gameID, boolean isWhite) {
+        chessDisplay.drawBoard(gameID, isWhite);
     }
 }
