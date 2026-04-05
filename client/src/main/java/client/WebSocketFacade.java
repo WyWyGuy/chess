@@ -16,8 +16,14 @@ public class WebSocketFacade extends Endpoint {
         session = container.connectToServer(this, new URI(url));
     }
 
-    public void join(int gameID, String authToken) throws Exception {
-        UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID);
+    public void join(int gameID, String authToken, String username, boolean isWhite) throws Exception {
+        UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID, username, isWhite ? "white" : "black");
+        String commandStr = gson.toJson(command);
+        session.getBasicRemote().sendText(commandStr);
+    }
+
+    public void observe(int gameID, String authToken, String username) throws Exception {
+        UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID, username, "an observer");
         String commandStr = gson.toJson(command);
         session.getBasicRemote().sendText(commandStr);
     }

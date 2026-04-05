@@ -64,7 +64,7 @@ public class UserInterface {
         try {
             webSocketFacade = new WebSocketFacade();
             webSocketFacade.connect("ws://localhost:" + port + "/ws");
-            webSocketFacade.join(gameID, auth.authToken());
+            webSocketFacade.join(gameID, auth.authToken(), username, isWhite);
         } catch (Exception e) {
             System.out.println("An error occurred while trying to connect to the game");
         }
@@ -84,7 +84,24 @@ public class UserInterface {
     }
 
     private void observeMenu(int gameID) {
-        //TODO
+        try {
+            webSocketFacade = new WebSocketFacade();
+            webSocketFacade.connect("ws://localhost:" + port + "/ws");
+            webSocketFacade.observe(gameID, auth.authToken(), username);
+        } catch (Exception e) {
+            System.out.println("An error occurred while trying to connect to the game");
+        }
+        boolean running = true;
+        while (running) {
+            System.out.print("Enter a command (type 'help' for a list of commands): ");
+            String command = scanner.nextLine().trim().toLowerCase();
+            switch (command) {
+                case "leave" -> executeGameLeave();
+                case "help" -> executeGameHelp();
+                case "redraw chess board" -> executeDrawChessBoard(gameID, true);
+                case "highlight legal moves" -> executeHighlightMoves();
+            }
+        }
     }
 
     private boolean executeQuit() {

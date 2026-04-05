@@ -16,10 +16,16 @@ public class UserGameCommand {
 
     private final Integer gameID;
 
-    public UserGameCommand(CommandType commandType, String authToken, Integer gameID) {
+    private final String username;
+
+    private final String role;
+
+    public UserGameCommand(CommandType commandType, String authToken, Integer gameID, String username, String role) {
         this.commandType = commandType;
         this.authToken = authToken;
         this.gameID = gameID;
+        this.username = username;
+        this.role = role;
     }
 
     public enum CommandType {
@@ -39,6 +45,14 @@ public class UserGameCommand {
 
     public Integer getGameID() {
         return gameID;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getRole() {
+        return role;
     }
 
     @Override
