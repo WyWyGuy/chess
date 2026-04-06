@@ -74,7 +74,7 @@ public class UserInterface {
             System.out.print("Enter a command (type 'help' for a list of commands): ");
             String command = scanner.nextLine().trim().toLowerCase();
             switch (command) {
-                case "leave" -> executeGameLeave();
+                case "leave" -> running = executeGameLeave(gameID, auth.authToken(), username, isWhite);
                 case "help" -> executeGameHelp();
                 case "redraw chess board" -> renderChessBoard(curr_state, isWhite);
                 case "make move" -> executeMakeMove();
@@ -97,8 +97,8 @@ public class UserInterface {
             System.out.print("Enter a command (type 'help' for a list of commands): ");
             String command = scanner.nextLine().trim().toLowerCase();
             switch (command) {
-                case "leave" -> executeGameLeave();
-                case "help" -> executeGameHelp();
+                case "leave" -> running = executeObserverLeave(gameID, auth.authToken(), username);
+                case "help" -> executeObserverHelp();
                 case "redraw chess board" -> renderChessBoard(curr_state, true);
                 case "highlight legal moves" -> executeHighlightMoves();
             }
@@ -290,12 +290,36 @@ public class UserInterface {
         System.out.println("Resign - resign from the current game");
     }
 
+    private void executeObserverHelp() {
+        System.out.println("Commands:");
+        System.out.println("Help - shows this menu");
+        System.out.println("Highlight Legal Moves - render the chess board to show possible moves for a piece");
+        System.out.println("Leave - exit the current game");
+        System.out.println("Redraw Chess Board - rerender the chess board in its current state");
+    }
+
     public void renderChessBoard(ChessGame game, boolean isWhite) {
         chessDisplay.drawBoard(game, isWhite);
     }
 
-    private void executeGameLeave() {
-        //TODO
+    private boolean executeGameLeave(int gameID, String authToken, String username, boolean isWhite) {
+        try {
+            webSocketFacade.leave(gameID, authToken, username, (isWhite ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK));
+            return false;
+        } catch (Exception e) {
+            System.out.println("An error occurred when trying to leave the game");
+            return true;
+        }
+    }
+
+    private boolean executeObserverLeave(int gameID, String authToken, String username) {
+        try {
+            webSocketFacade.leave(gameID, authToken, username, null);
+            return false;
+        } catch (Exception e) {
+            System.out.println("An error occurred when trying to leave the game");
+            return true;
+        }
     }
 
     private void executeResign() {

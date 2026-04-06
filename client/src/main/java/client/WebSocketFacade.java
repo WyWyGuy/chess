@@ -1,5 +1,6 @@
 package client;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import jakarta.websocket.*;
 import ui.UserInterface;
@@ -48,6 +49,12 @@ public class WebSocketFacade extends Endpoint {
 
     public void observe(int gameID, String authToken, String username) throws Exception {
         UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID, username, "an observer");
+        String commandStr = gson.toJson(command);
+        session.getBasicRemote().sendText(commandStr);
+    }
+
+    public void leave(int gameID, String authToken, String username, ChessGame.TeamColor team) throws Exception {
+        UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID, username, gson.toJson(team));
         String commandStr = gson.toJson(command);
         session.getBasicRemote().sendText(commandStr);
     }

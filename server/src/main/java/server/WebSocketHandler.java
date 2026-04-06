@@ -12,6 +12,7 @@ import websocket.messages.ServerMessage;
 import java.io.IOException;
 import java.util.Objects;
 
+import static chess.ChessGame.TeamColor;
 import static websocket.messages.ServerMessage.ServerMessageType.LOAD_GAME;
 import static websocket.messages.ServerMessage.ServerMessageType.NOTIFICATION;
 
@@ -49,15 +50,23 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         connectionManager.broadcast(notification, command.getGameID(), ctx.session);
     }
 
-    private void executeMakeMove(WsMessageContext ctx, UserGameCommand command) {
+    private void executeMakeMove(WsMessageContext ctx, UserGameCommand command) throws Exception {
         //TODO
     }
 
-    private void executeLeave(WsMessageContext ctx, UserGameCommand command) {
-        //TODO
+    private void executeLeave(WsMessageContext ctx, UserGameCommand command) throws Exception {
+        connectionManager.remove(command.getGameID(), ctx.session);
+        if (gson.fromJson(command.getRole(), TeamColor.class) == TeamColor.WHITE) {
+            gameDAO.updateWhitePlayer(command.getGameID(), null);
+        }
+        if (gson.fromJson(command.getRole(), TeamColor.class) == TeamColor.BLACK) {
+            gameDAO.updateBlackPlayer(command.getGameID(), null);
+        }
+        NotificationMessage notification = new NotificationMessage(command.getUsername() + " has left to the game");
+        connectionManager.broadcast(notification, command.getGameID(), ctx.session);
     }
 
-    private void executeResign(WsMessageContext ctx, UserGameCommand command) {
+    private void executeResign(WsMessageContext ctx, UserGameCommand command) throws Exception {
         //TODO
     }
 
