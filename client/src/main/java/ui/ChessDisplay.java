@@ -23,11 +23,11 @@ public class ChessDisplay {
                 BLACK_PAWN, BLACK_ROOK, BLACK_KNIGHT, BLACK_BISHOP, BLACK_QUEEN, BLACK_KING
         );
         String[] letters = {" ", "a", "b", "c", "d", "e", "f", "g", "h", " "};
-        String[] numbers = {"1", "2", "3", "4", "5", "6", "7", "8"};
+        String[] numbers = {"8", "7", "6", "5", "4", "3", "2", "1"};
         ChessPiece[][] rows = new ChessPiece[8][8];
         for (int i = 0; i <= 7; i++) {
             for (int j = 0; j <= 7; j++) {
-                rows[i][j] = game.getBoard().getPiece(new ChessPosition(i + 1, j + 1));
+                rows[7 - i][j] = game.getBoard().getPiece(new ChessPosition(i + 1, j + 1));
             }
         }
         if (!whitePerspective) {
@@ -56,46 +56,55 @@ public class ChessDisplay {
                 System.out.print(bgColorWhite ? blackColor : whiteColor);
                 ChessPiece piece = rows[i][j];
                 String posChar;
-                switch (piece.getPieceType()) {
-                    case KING:
-                        if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
-                            posChar = WHITE_KING;
-                        } else {
-                            posChar = BLACK_KING;
-                        }
-                        break;
-                    case QUEEN:
-                        if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
-                            posChar = WHITE_QUEEN;
-                        } else {
-                            posChar = BLACK_QUEEN;
-                        }
-                    case ROOK:
-                        if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
-                            posChar = WHITE_ROOK;
-                        } else {
-                            posChar = BLACK_ROOK;
-                        }
-                    case KNIGHT:
-                        if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
-                            posChar = WHITE_KNIGHT;
-                        } else {
-                            posChar = BLACK_KNIGHT;
-                        }
-                    case BISHOP:
-                        if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
-                            posChar = WHITE_BISHOP;
-                        } else {
-                            posChar = BLACK_BISHOP;
-                        }
-                    case PAWN:
-                        if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
-                            posChar = WHITE_PAWN;
-                        } else {
-                            posChar = BLACK_PAWN;
-                        }
-                    default:
-                        posChar = " ";
+                if (piece == null) {
+                    posChar = " ";
+                } else {
+                    switch (piece.getPieceType()) {
+                        case KING:
+                            if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
+                                posChar = WHITE_KING;
+                            } else {
+                                posChar = BLACK_KING;
+                            }
+                            break;
+                        case QUEEN:
+                            if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
+                                posChar = WHITE_QUEEN;
+                            } else {
+                                posChar = BLACK_QUEEN;
+                            }
+                            break;
+                        case ROOK:
+                            if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
+                                posChar = WHITE_ROOK;
+                            } else {
+                                posChar = BLACK_ROOK;
+                            }
+                            break;
+                        case KNIGHT:
+                            if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
+                                posChar = WHITE_KNIGHT;
+                            } else {
+                                posChar = BLACK_KNIGHT;
+                            }
+                            break;
+                        case BISHOP:
+                            if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
+                                posChar = WHITE_BISHOP;
+                            } else {
+                                posChar = BLACK_BISHOP;
+                            }
+                            break;
+                        case PAWN:
+                            if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
+                                posChar = WHITE_PAWN;
+                            } else {
+                                posChar = BLACK_PAWN;
+                            }
+                            break;
+                        default:
+                            posChar = " ";
+                    }
                 }
                 if (wideCharacters.contains(posChar)) {
                     System.out.print(posChar);
