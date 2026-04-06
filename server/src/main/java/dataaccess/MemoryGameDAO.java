@@ -10,6 +10,7 @@ import java.util.List;
 public class MemoryGameDAO implements GameDAO {
 
     private static HashMap<Integer, GameData> games = new HashMap<>();
+    private static HashMap<Integer, Boolean> over = new HashMap<>();
     private static int gameCounter = 1;
 
     @Override
@@ -34,6 +35,7 @@ public class MemoryGameDAO implements GameDAO {
         GameData game = new GameData(id, gameInfo.whiteUsername(), gameInfo.blackUsername(), gameInfo.gameName(), gameInfo.game());
         this.gameCounter += 1;
         this.games.put(game.gameID(), game);
+        this.over.put(game.gameID(), false);
         return id;
     }
 
@@ -62,6 +64,16 @@ public class MemoryGameDAO implements GameDAO {
         GameData game = this.games.get(id);
         GameData updatedGame = new GameData(game.gameID(), game.whiteUsername(), player, game.gameName(), game.game());
         this.games.put(game.gameID(), updatedGame);
+    }
+
+    @Override
+    public void markGameOver(int id) throws DataAccessException {
+        this.over.put(id, true);
+    }
+
+    @Override
+    public boolean gameIsOver(int id) throws DataAccessException {
+        return this.over.get(id);
     }
 
     @Override

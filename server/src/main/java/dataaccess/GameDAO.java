@@ -20,4 +20,8 @@ public interface GameDAO {
 
     void updateBlackPlayer(int id, String player) throws DataAccessException;
 
+    void markGameOver(int id) throws DataAccessException;
+
+    boolean gameIsOver(int id) throws DataAccessException;
+
 }

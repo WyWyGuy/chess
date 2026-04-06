@@ -5,6 +5,7 @@ import dataaccess.DatabaseGameDAO;
 import dataaccess.GameDAO;
 import io.javalin.websocket.*;
 import websocket.commands.UserGameCommand;
+import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
@@ -24,7 +25,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
     @Override
     public void handleConnect(WsConnectContext ctx) {
-        //TODO
     }
 
     @Override
@@ -52,6 +52,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
     private void executeMakeMove(WsMessageContext ctx, UserGameCommand command) throws Exception {
         //TODO
+        //Send back an error if the game is resigned
     }
 
     private void executeLeave(WsMessageContext ctx, UserGameCommand command) throws Exception {
@@ -67,11 +68,17 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
     private void executeResign(WsMessageContext ctx, UserGameCommand command) throws Exception {
-        //TODO
+        if (!gameDAO.gameIsOver(command.getGameID())) {
+            gameDAO.markGameOver(command.getGameID());
+            NotificationMessage notification = new NotificationMessage(command.getUsername() + " has resigned");
+            connectionManager.broadcast(notification, command.getGameID(), ctx.session);
+        } else {
+            ErrorMessage error = new ErrorMessage("The game has already ended!");
+            ctx.session.getRemote().sendString(gson.toJson(error));
+        }
     }
 
     @Override
     public void handleClose(WsCloseContext ctx) {
-        //TODO
     }
 }

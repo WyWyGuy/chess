@@ -78,7 +78,7 @@ public class UserInterface {
                 case "help" -> executeGameHelp();
                 case "redraw chess board" -> renderChessBoard(curr_state, isWhite);
                 case "make move" -> executeMakeMove();
-                case "resign" -> executeResign();
+                case "resign" -> executeResign(gameID, auth.authToken(), username);
                 case "highlight legal moves" -> executeHighlightMoves();
             }
         }
@@ -155,6 +155,7 @@ public class UserInterface {
         try {
             auth = serverFacade.register(username, password, email);
             System.out.println("Successfully registered new user: " + username);
+            this.username = username;
             mainMenu();
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -322,8 +323,16 @@ public class UserInterface {
         }
     }
 
-    private void executeResign() {
-        //TODO
+    private void executeResign(int gameID, String authToken, String username) {
+        System.out.print("Are you sure you want to resign? ");
+        String confirm = scanner.nextLine().trim().toLowerCase();
+        if (confirm.equals("yes")) {
+            try {
+                webSocketFacade.resign(gameID, authToken, username);
+            } catch (Exception e) {
+                System.out.println("An error occurred when trying to resign");
+            }
+        }
     }
 
     private void executeHighlightMoves() {

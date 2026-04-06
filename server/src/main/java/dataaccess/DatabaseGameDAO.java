@@ -146,4 +146,36 @@ public class DatabaseGameDAO implements GameDAO {
         }
     }
 
+    @Override
+    public void markGameOver(int id) throws DataAccessException {
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement("UPDATE games SET gameOver = ? WHERE gameID = ?")) {
+            stmt.setBoolean(1, true);
+            stmt.setInt(2, id);
+            int changed = stmt.executeUpdate();
+            if (changed != 1) {
+                throw new DataAccessException(
+                        "Error: setting game " + id + " to over should have modified one row but " + changed + " were changed"
+                );
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Error: could not set game " + id + " to over", e);
+        }
+    }
+
+    @Override
+    public boolean gameIsOver(int id) throws DataAccessException {
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM games WHERE gameID = ?")) {
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getBoolean("gameOver");
+            }
+            throw new DataAccessException("Error: could not find game " + id);
+        } catch (SQLException e) {
+            throw new DataAccessException("Error: could not return game " + id, e);
+        }
+    }
+
 }
