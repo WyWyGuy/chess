@@ -16,12 +16,9 @@ public class ServerMessage {
         ERROR,
         NOTIFICATION
     }
-
-    public String message;
-
-    public ServerMessage(ServerMessageType type, String message) {
+    
+    public ServerMessage(ServerMessageType type) {
         this.serverMessageType = type;
-        this.message = message;
     }
 
     public ServerMessageType getServerMessageType() {

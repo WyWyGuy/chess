@@ -3,6 +3,8 @@ package server;
 import com.google.gson.Gson;
 import io.javalin.websocket.*;
 import websocket.commands.UserGameCommand;
+import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;
@@ -37,9 +39,9 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
     private void executeConnect(WsMessageContext ctx, UserGameCommand command) throws Exception {
         connectionManager.add(command.getGameID(), ctx.session);
-        ServerMessage loadGame = new ServerMessage(LOAD_GAME, null);
+        LoadGameMessage loadGame = new LoadGameMessage(null);
         ctx.session.getRemote().sendString(gson.toJson(loadGame));
-        ServerMessage notification = new ServerMessage(NOTIFICATION, command.getUsername() + " has connected to the game as " + command.getRole());
+        NotificationMessage notification = new NotificationMessage(command.getUsername() + " has connected to the game as " + command.getRole());
         connectionManager.broadcast(notification, command.getGameID(), ctx.session);
     }
 
