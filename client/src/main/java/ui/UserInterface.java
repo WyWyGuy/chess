@@ -20,6 +20,7 @@ public class UserInterface {
     private ChessDisplay chessDisplay = new ChessDisplay();
     private int port;
     private AuthData auth;
+    public ChessGame curr_state;
 
     public UserInterface(String hostname, int port) {
         serverFacade = new ServerFacade(hostname, port);
@@ -62,7 +63,7 @@ public class UserInterface {
 
     private void gameMenu(int gameID, boolean isWhite) {
         try {
-            webSocketFacade = new WebSocketFacade();
+            webSocketFacade = new WebSocketFacade(this);
             webSocketFacade.connect("ws://localhost:" + port + "/ws");
             webSocketFacade.join(gameID, auth.authToken(), username, isWhite);
         } catch (Exception e) {
@@ -75,7 +76,7 @@ public class UserInterface {
             switch (command) {
                 case "leave" -> executeGameLeave();
                 case "help" -> executeGameHelp();
-                case "redraw chess board" -> executeDrawChessBoard(gameID, isWhite);
+                case "redraw chess board" -> renderChessBoard(curr_state, isWhite);
                 case "make move" -> executeMakeMove();
                 case "resign" -> executeResign();
                 case "highlight legal moves" -> executeHighlightMoves();
@@ -85,7 +86,7 @@ public class UserInterface {
 
     private void observeMenu(int gameID) {
         try {
-            webSocketFacade = new WebSocketFacade();
+            webSocketFacade = new WebSocketFacade(this);
             webSocketFacade.connect("ws://localhost:" + port + "/ws");
             webSocketFacade.observe(gameID, auth.authToken(), username);
         } catch (Exception e) {
@@ -98,7 +99,7 @@ public class UserInterface {
             switch (command) {
                 case "leave" -> executeGameLeave();
                 case "help" -> executeGameHelp();
-                case "redraw chess board" -> executeDrawChessBoard(gameID, true);
+                case "redraw chess board" -> renderChessBoard(curr_state, true);
                 case "highlight legal moves" -> executeHighlightMoves();
             }
         }
@@ -289,8 +290,8 @@ public class UserInterface {
         System.out.println("Resign - resign from the current game");
     }
 
-    private void executeDrawChessBoard(int gameID, boolean isWhite) {
-        chessDisplay.drawBoard(gameID, isWhite);
+    public void renderChessBoard(ChessGame game, boolean isWhite) {
+        chessDisplay.drawBoard(game, isWhite);
     }
 
     private void executeGameLeave() {
