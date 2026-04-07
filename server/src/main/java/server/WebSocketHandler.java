@@ -27,6 +27,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
     @Override
     public void handleConnect(WsConnectContext ctx) {
+        ctx.enableAutomaticPings();
     }
 
     @Override
@@ -56,6 +57,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         GameData game = gameDAO.getGame(command.getGameID());
         ChessMove moveRequest = command.getMove();
         ChessPosition start = moveRequest.getStartPosition();
+        ChessPiece movingPiece = game.game().getBoard().getPiece(start);
         if (gameDAO.gameIsOver(command.getGameID())) {
             ErrorMessage error = new ErrorMessage("Error: The game has already ended!");
             ctx.session.getRemote().sendString(gson.toJson(error));
@@ -66,19 +68,19 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             ctx.session.getRemote().sendString(gson.toJson(error));
             return;
         }
-        if (start == null) {
+        if (movingPiece == null) {
             ErrorMessage error = new ErrorMessage("Error: Cannot perform move because there is no piece there!");
             ctx.session.getRemote().sendString(gson.toJson(error));
             return;
         }
-        TeamColor colorAtStart = game.game().getBoard().getPiece(start).getTeamColor();
+        TeamColor colorAtStart = movingPiece.getTeamColor();
         if (colorAtStart != command.getTeamColor()) {
             ErrorMessage error = new ErrorMessage("Error: Cannot move a piece that is not yours!");
             ctx.session.getRemote().sendString(gson.toJson(error));
             return;
         }
         Collection<ChessMove> validMoves = game.game().validMoves(start);
-        if (!validMoves.contains(moveRequest)) {
+        if (validMoves == null || !validMoves.contains(moveRequest)) {
             ErrorMessage error = new ErrorMessage("Error: Invalid move pattern!");
             ctx.session.getRemote().sendString(gson.toJson(error));
             return;
@@ -87,7 +89,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         gameDAO.updateGame(command.getGameID(), game);
         LoadGameMessage loadGame = new LoadGameMessage(gameDAO.getGame(command.getGameID()).game());
         connectionManager.broadcast(loadGame, command.getGameID(), null);
-        String pieceType = switch (game.game().getBoard().getPiece(start).getPieceType()) {
+        String pieceType = switch (movingPiece.getPieceType()) {
             case KING -> "king";
             case QUEEN -> "queen";
             case ROOK -> "rook";

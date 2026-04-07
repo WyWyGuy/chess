@@ -20,12 +20,18 @@ public class WebSocketFacade extends Endpoint {
     private Session session;
     private Gson gson = new Gson();
     private final UserInterface ui;
+    private String url;
+    private UserGameCommand lastConnectCommand;
 
     public WebSocketFacade(UserInterface ui) {
         this.ui = ui;
     }
 
     public void connect(String url) throws Exception {
+        this.url = url;
+        if (session != null && session.isOpen()) {
+            return;
+        }
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
         session = container.connectToServer(this, new URI(url));
         this.session.addMessageHandler(new MessageHandler.Whole<String>() {
@@ -43,33 +49,53 @@ public class WebSocketFacade extends Endpoint {
     }
 
     public void join(int gameID, String authToken, String username, boolean isWhite) throws Exception {
-        UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID, username, isWhite ? "white" : "black");
-        String commandStr = gson.toJson(command);
-        session.getBasicRemote().sendText(commandStr);
+        lastConnectCommand = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID, username, isWhite ? "white" : "black");
+        ensureConnected();
+        send(lastConnectCommand);
     }
 
     public void observe(int gameID, String authToken, String username) throws Exception {
-        UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID, username, "an observer");
-        String commandStr = gson.toJson(command);
-        session.getBasicRemote().sendText(commandStr);
+        lastConnectCommand = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID, username, "an observer");
+        ensureConnected();
+        send(lastConnectCommand);
     }
 
     public void leave(int gameID, String authToken, String username, ChessGame.TeamColor team) throws Exception {
         UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID, username, gson.toJson(team));
-        String commandStr = gson.toJson(command);
-        session.getBasicRemote().sendText(commandStr);
+        ensureConnected();
+        send(command);
     }
 
     public void resign(int gameID, String authToken, String username) throws Exception {
         UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.RESIGN, authToken, gameID, username, null);
-        String commandStr = gson.toJson(command);
-        session.getBasicRemote().sendText(commandStr);
+        ensureConnected();
+        send(command);
     }
 
     public void makeMove(int gameID, String authToken, String username, ChessMove moveRequest, boolean isWhite) throws Exception {
         UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken, gameID, username, null, moveRequest, (isWhite ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK));
-        String commandStr = gson.toJson(command);
-        session.getBasicRemote().sendText(commandStr);
+        ensureConnected();
+        send(command);
+    }
+
+    private void ensureConnected() throws Exception {
+        if (session != null && session.isOpen()) {
+            return;
+        }
+        if (url == null) {
+            throw new IllegalStateException("WebSocket is not connected (no server URL). Re-join the game and try again.");
+        }
+        connect(url);
+        if (lastConnectCommand != null) {
+            send(lastConnectCommand);
+        }
+    }
+
+    private synchronized void send(UserGameCommand command) throws IOException {
+        if (session == null || !session.isOpen()) {
+            throw new IOException("WebSocket connection is closed. Re-join the game and try again.");
+        }
+        session.getBasicRemote().sendText(gson.toJson(command));
     }
 
     private void handleNotification(NotificationMessage notification) {
@@ -93,6 +119,22 @@ public class WebSocketFacade extends Endpoint {
 
     @Override
     public void onOpen(Session session, EndpointConfig endpointConfig) {
+    }
+
+    @Override
+    public void onClose(Session session, CloseReason closeReason) {
+        this.session = null;
+        System.out.println();
+        System.out.println("WebSocket disconnected: " + closeReason);
+        System.out.print("Enter a command (type 'help' for a list of commands): ");
+    }
+
+    @Override
+    public void onError(Session session, Throwable thr) {
+        this.session = null;
+        System.out.println();
+        System.out.println("WebSocket error: " + (thr == null ? "unknown" : thr.getMessage()));
+        System.out.print("Enter a command (type 'help' for a list of commands): ");
     }
 
 }

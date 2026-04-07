@@ -19,11 +19,24 @@ public class ConnectionManager {
     }
 
     public void remove(int gameID, Session session) {
-        connections.get(gameID).remove(session);
+        var set = connections.get(gameID);
+        if (set != null) {
+            set.remove(session);
+        }
+    }
+
+    public void remove(Session session) {
+        for (Set<Session> set : connections.values()) {
+            set.remove(session);
+        }
     }
 
     public void broadcast(ServerMessage notification, int gameID, Session excludeSession) throws Exception {
-        for (Session s : connections.get(gameID)) {
+        var set = connections.get(gameID);
+        if (set == null) {
+            return;
+        }
+        for (Session s : set) {
             if (s.isOpen() && !s.equals(excludeSession)) {
                 String msg = gson.toJson(notification);
                 s.getRemote().sendString(msg);

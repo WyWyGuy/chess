@@ -7,6 +7,8 @@ import io.javalin.http.Context;
 import model.*;
 import service.*;
 
+import java.time.Duration;
+
 public class Server {
 
     private final Javalin javalin;
@@ -19,7 +21,12 @@ public class Server {
     private WebSocketHandler webSocketHandler = new WebSocketHandler();
 
     public Server() {
-        javalin = Javalin.create(config -> config.staticFiles.add("web"));
+        javalin = Javalin.create(config -> {
+            config.staticFiles.add("web");
+            // Jetty defaults to closing idle WebSockets after ~30s ("Connection Idle Timeout").
+            // Our clients can be idle between moves, so raise this timeout substantially.
+            config.jetty.modifyWebSocketServletFactory(factory -> factory.setIdleTimeout(Duration.ofMinutes(10)));
+        });
         javalin.delete("/db", this::clearHandler);
         javalin.post("/user", this::registerHandler);
         javalin.post("/session", this::loginHandler);
