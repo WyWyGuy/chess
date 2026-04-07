@@ -38,11 +38,7 @@ public class GameService {
             throw new DataAccessException("Error: game " + request.gameID() + " does not exist");
         }
         GameData game = gameDAO.getGame(request.gameID());
-//        if (request.playerColor() == ChessGame.TeamColor.WHITE && Objects.equals(auth.username(), game.blackUsername())) {
-//            throw new ServiceException("Error: cannot join game as both players", 403);
-//        } else if (request.playerColor() == ChessGame.TeamColor.BLACK && Objects.equals(auth.username(), game.whiteUsername())) {
-//            throw new ServiceException("Error: cannot join game as both players", 403);
-//        }
+        // Adding checks here and throwing a service exception could prevent joining the game as both teams.
         if ((request.playerColor() == ChessGame.TeamColor.WHITE) && game.whiteUsername() == null) {
             gameDAO.updateWhitePlayer(request.gameID(), auth.username());
         } else if ((request.playerColor() == ChessGame.TeamColor.BLACK) && game.blackUsername() == null) {

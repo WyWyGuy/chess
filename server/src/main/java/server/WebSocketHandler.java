@@ -150,6 +150,13 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         String text = command.getUsername() + " moves " + pieceType + " from " + startStr + " to " + endStr + promotionText;
         NotificationMessage notification = new NotificationMessage(text);
         connectionManager.broadcast(notification, command.getGameID(), ctx.session);
+        boolean endGame = postMoveChecks(game, command);
+        if (endGame) {
+            gameDAO.markGameOver(command.getGameID());
+        }
+    }
+
+    private boolean postMoveChecks(GameData game, UserGameCommand command) throws Exception {
         boolean endGame = false;
         if (game.game().isInCheckmate(TeamColor.WHITE)) {
             NotificationMessage whiteCheckmateNotification = new NotificationMessage(game.whiteUsername() + " is in checkmate!");
@@ -181,9 +188,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             connectionManager.broadcast(blackStalemateNotification, command.getGameID(), null);
             endGame = true;
         }
-        if (endGame) {
-            gameDAO.markGameOver(command.getGameID());
-        }
+        return endGame;
     }
 
     private void executeLeave(WsMessageContext ctx, UserGameCommand command) throws Exception {

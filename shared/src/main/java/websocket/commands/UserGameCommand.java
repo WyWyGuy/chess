@@ -37,7 +37,13 @@ public class UserGameCommand {
         this.teamColor = null;
     }
 
-    public UserGameCommand(CommandType commandType, String authToken, Integer gameID, String username, String role, ChessMove move, ChessGame.TeamColor teamColor) {
+    public UserGameCommand(CommandType commandType,
+                           String authToken,
+                           Integer gameID,
+                           String username,
+                           String role,
+                           ChessMove move,
+                           ChessGame.TeamColor teamColor) {
         this.commandType = commandType;
         this.authToken = authToken;
         this.gameID = gameID;

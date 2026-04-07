@@ -21,7 +21,7 @@ public class UserInterface {
     private ChessDisplay chessDisplay = new ChessDisplay();
     private int port;
     private AuthData auth;
-    public ChessGame curr_state;
+    public ChessGame currState;
     private boolean renderWhite;
 
     public UserInterface(String hostname, int port) {
@@ -80,10 +80,10 @@ public class UserInterface {
             switch (command) {
                 case "leave" -> running = executeGameLeave(gameID, auth.authToken(), username, isWhite);
                 case "help" -> executeGameHelp();
-                case "redraw chess board" -> renderChessBoard(curr_state);
+                case "redraw chess board" -> renderChessBoard(currState);
                 case "make move" -> executeMakeMove(gameID, auth.authToken(), username, isWhite);
                 case "resign" -> executeResign(gameID, auth.authToken(), username);
-                case "highlight legal moves" -> executeHighlightMoves(curr_state, isWhite);
+                case "highlight legal moves" -> executeHighlightMoves(currState, isWhite);
             }
         }
     }
@@ -105,8 +105,8 @@ public class UserInterface {
             switch (command) {
                 case "leave" -> running = executeObserverLeave(gameID, auth.authToken(), username);
                 case "help" -> executeObserverHelp();
-                case "redraw chess board" -> renderChessBoard(curr_state);
-                case "highlight legal moves" -> executeHighlightMoves(curr_state, true);
+                case "redraw chess board" -> renderChessBoard(currState);
+                case "highlight legal moves" -> executeHighlightMoves(currState, true);
             }
         }
     }
@@ -373,7 +373,7 @@ public class UserInterface {
         int endCol = end.charAt(0) - 'a' + 1;
         ChessPosition startPosition = new ChessPosition(startRow, startCol);
         ChessPosition endPosition = new ChessPosition(endRow, endCol);
-        ChessPiece movingPiece = curr_state.getBoard().getPiece(startPosition);
+        ChessPiece movingPiece = currState.getBoard().getPiece(startPosition);
         ChessPiece.PieceType promotion = null;
         if (movingPiece != null && movingPiece.getPieceType() == ChessPiece.PieceType.PAWN) {
             if ((isWhite && endPosition.getRow() == 8) || (!isWhite && endPosition.getRow() == 1)) {

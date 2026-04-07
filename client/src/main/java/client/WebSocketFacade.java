@@ -72,7 +72,14 @@ public class WebSocketFacade extends Endpoint {
     }
 
     public void makeMove(int gameID, String authToken, String username, ChessMove moveRequest, boolean isWhite) throws Exception {
-        UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken, gameID, username, null, moveRequest, (isWhite ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK));
+        UserGameCommand command = new UserGameCommand(
+                UserGameCommand.CommandType.MAKE_MOVE,
+                authToken,
+                gameID,
+                username,
+                null,
+                moveRequest,
+                (isWhite ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK));
         ensureConnected();
         send(command);
     }
@@ -104,7 +111,7 @@ public class WebSocketFacade extends Endpoint {
     }
 
     private void handleLoadGame(LoadGameMessage loadGame) {
-        ui.curr_state = loadGame.getGame();
+        ui.currState = loadGame.getGame();
         System.out.println();
         ui.renderChessBoard(loadGame.getGame());
         System.out.print("Enter a command (type 'help' for a list of commands): ");
