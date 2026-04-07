@@ -4,6 +4,8 @@ import chess.ChessMove;
 import chess.ChessPiece;
 import chess.ChessPosition;
 import com.google.gson.Gson;
+import dataaccess.AuthDAO;
+import dataaccess.DatabaseAuthDAO;
 import dataaccess.DatabaseGameDAO;
 import dataaccess.GameDAO;
 import io.javalin.websocket.*;
@@ -13,7 +15,6 @@ import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 
-import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -24,6 +25,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     private final Gson gson = new Gson();
     private final ConnectionManager connectionManager = new ConnectionManager();
     private final GameDAO gameDAO = new DatabaseGameDAO();
+    private final AuthDAO authDAO = new DatabaseAuthDAO();
 
     @Override
     public void handleConnect(WsConnectContext ctx) {
@@ -46,6 +48,11 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
     private void executeConnect(WsMessageContext ctx, UserGameCommand command) throws Exception {
+        if (!authDAO.authExists(command.getAuthToken())) {
+            ErrorMessage errorMessage = new ErrorMessage("Error: unauthorized");
+            ctx.session.getRemote().sendString(gson.toJson(errorMessage));
+            return;
+        }
         try {
             connectionManager.add(command.getGameID(), ctx.session);
             LoadGameMessage loadGame = new LoadGameMessage(gameDAO.getGame(command.getGameID()).game());
@@ -68,7 +75,25 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             ctx.session.getRemote().sendString(gson.toJson(errorMessage));
             return;
         }
-        if (game.game().getTeamTurn() != command.getTeamColor()) {
+        TeamColor playerColor;
+        String username;
+        try {
+            username = authDAO.getAuth(command.getAuthToken()).username();
+        } catch (Exception e) {
+            ErrorMessage errorMessage = new ErrorMessage("Error: unauthorized");
+            ctx.session.getRemote().sendString(gson.toJson(errorMessage));
+            return;
+        }
+        if (Objects.equals(username, game.whiteUsername())) {
+            playerColor = TeamColor.WHITE;
+        } else if (Objects.equals(username, game.blackUsername())) {
+            playerColor = TeamColor.BLACK;
+        } else {
+            ErrorMessage errorMessage = new ErrorMessage("Error: unauthorized");
+            ctx.session.getRemote().sendString(gson.toJson(errorMessage));
+            return;
+        }
+        if (game.game().getTeamTurn() != playerColor) {
             ErrorMessage errorMessage = new ErrorMessage("Error: Cannot play when it is not your turn!");
             ctx.session.getRemote().sendString(gson.toJson(errorMessage));
             return;
@@ -79,7 +104,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             return;
         }
         TeamColor colorAtStart = movingPiece.getTeamColor();
-        if (colorAtStart != command.getTeamColor()) {
+        if (colorAtStart != playerColor) {
             ErrorMessage errorMessage = new ErrorMessage("Error: Cannot move a piece that is not yours!");
             ctx.session.getRemote().sendString(gson.toJson(errorMessage));
             return;
@@ -169,10 +194,22 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
     private void executeResign(WsMessageContext ctx, UserGameCommand command) throws Exception {
+        String username;
+        try {
+            username = authDAO.getAuth(command.getAuthToken()).username();
+            if ((!Objects.equals(username, gameDAO.getGame(command.getGameID()).whiteUsername())) &&
+                    (!Objects.equals(username, gameDAO.getGame(command.getGameID()).blackUsername()))) {
+                throw new Exception();
+            }
+        } catch (Exception e) {
+            ErrorMessage errorMessage = new ErrorMessage("Error: unauthorized");
+            ctx.session.getRemote().sendString(gson.toJson(errorMessage));
+            return;
+        }
         if (!gameDAO.gameIsOver(command.getGameID())) {
             gameDAO.markGameOver(command.getGameID());
             NotificationMessage notification = new NotificationMessage(command.getUsername() + " has resigned");
-            connectionManager.broadcast(notification, command.getGameID(), ctx.session);
+            connectionManager.broadcast(notification, command.getGameID(), null);
         } else {
             ErrorMessage errorMessage = new ErrorMessage("Error: The game has already ended!");
             ctx.session.getRemote().sendString(gson.toJson(errorMessage));

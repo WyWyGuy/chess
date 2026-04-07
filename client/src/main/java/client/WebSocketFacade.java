@@ -13,7 +13,6 @@ import websocket.messages.ServerMessage;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 
 public class WebSocketFacade extends Endpoint {
 
@@ -113,7 +112,7 @@ public class WebSocketFacade extends Endpoint {
 
     private void handleError(ErrorMessage error) {
         System.out.println();
-        System.out.println(error.getError());
+        System.out.println(error.getErrorMessage());
         System.out.print("Enter a command (type 'help' for a list of commands): ");
     }
 
