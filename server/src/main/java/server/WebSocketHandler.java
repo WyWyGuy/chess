@@ -46,11 +46,16 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
     private void executeConnect(WsMessageContext ctx, UserGameCommand command) throws Exception {
-        connectionManager.add(command.getGameID(), ctx.session);
-        LoadGameMessage loadGame = new LoadGameMessage(gameDAO.getGame(command.getGameID()).game());
-        ctx.session.getRemote().sendString(gson.toJson(loadGame));
-        NotificationMessage notification = new NotificationMessage(command.getUsername() + " has connected to the game as " + command.getRole());
-        connectionManager.broadcast(notification, command.getGameID(), ctx.session);
+        try {
+            connectionManager.add(command.getGameID(), ctx.session);
+            LoadGameMessage loadGame = new LoadGameMessage(gameDAO.getGame(command.getGameID()).game());
+            ctx.session.getRemote().sendString(gson.toJson(loadGame));
+            NotificationMessage notification = new NotificationMessage(command.getUsername() + " has connected to the game as " + command.getRole());
+            connectionManager.broadcast(notification, command.getGameID(), ctx.session);
+        } catch (Exception e) {
+            ErrorMessage errorMessage = new ErrorMessage("Error: could not connect to the game");
+            ctx.session.getRemote().sendString(gson.toJson(errorMessage));
+        }
     }
 
     private void executeMakeMove(WsMessageContext ctx, UserGameCommand command) throws Exception {
@@ -59,30 +64,30 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         ChessPosition start = moveRequest.getStartPosition();
         ChessPiece movingPiece = game.game().getBoard().getPiece(start);
         if (gameDAO.gameIsOver(command.getGameID())) {
-            ErrorMessage error = new ErrorMessage("Error: The game has already ended!");
-            ctx.session.getRemote().sendString(gson.toJson(error));
+            ErrorMessage errorMessage = new ErrorMessage("Error: The game has already ended!");
+            ctx.session.getRemote().sendString(gson.toJson(errorMessage));
             return;
         }
         if (game.game().getTeamTurn() != command.getTeamColor()) {
-            ErrorMessage error = new ErrorMessage("Error: Cannot play when it is not your turn!");
-            ctx.session.getRemote().sendString(gson.toJson(error));
+            ErrorMessage errorMessage = new ErrorMessage("Error: Cannot play when it is not your turn!");
+            ctx.session.getRemote().sendString(gson.toJson(errorMessage));
             return;
         }
         if (movingPiece == null) {
-            ErrorMessage error = new ErrorMessage("Error: Cannot perform move because there is no piece there!");
-            ctx.session.getRemote().sendString(gson.toJson(error));
+            ErrorMessage errorMessage = new ErrorMessage("Error: Cannot perform move because there is no piece there!");
+            ctx.session.getRemote().sendString(gson.toJson(errorMessage));
             return;
         }
         TeamColor colorAtStart = movingPiece.getTeamColor();
         if (colorAtStart != command.getTeamColor()) {
-            ErrorMessage error = new ErrorMessage("Error: Cannot move a piece that is not yours!");
-            ctx.session.getRemote().sendString(gson.toJson(error));
+            ErrorMessage errorMessage = new ErrorMessage("Error: Cannot move a piece that is not yours!");
+            ctx.session.getRemote().sendString(gson.toJson(errorMessage));
             return;
         }
         Collection<ChessMove> validMoves = game.game().validMoves(start);
         if (validMoves == null || !validMoves.contains(moveRequest)) {
-            ErrorMessage error = new ErrorMessage("Error: Invalid move pattern!");
-            ctx.session.getRemote().sendString(gson.toJson(error));
+            ErrorMessage errorMessage = new ErrorMessage("Error: Invalid move pattern!");
+            ctx.session.getRemote().sendString(gson.toJson(errorMessage));
             return;
         }
         game.game().makeMove(moveRequest);
@@ -169,8 +174,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             NotificationMessage notification = new NotificationMessage(command.getUsername() + " has resigned");
             connectionManager.broadcast(notification, command.getGameID(), ctx.session);
         } else {
-            ErrorMessage error = new ErrorMessage("Error: The game has already ended!");
-            ctx.session.getRemote().sendString(gson.toJson(error));
+            ErrorMessage errorMessage = new ErrorMessage("Error: The game has already ended!");
+            ctx.session.getRemote().sendString(gson.toJson(errorMessage));
         }
     }
 
