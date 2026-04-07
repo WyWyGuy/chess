@@ -230,8 +230,4 @@ public class Server {
             ctx.result(gson.toJson(new Message(e.getMessage())));
         }
     }
-
-    public void webSocketHandler(Context ctx) {
-
-    }
 }

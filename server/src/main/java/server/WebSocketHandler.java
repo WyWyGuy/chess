@@ -78,7 +78,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             ctx.session.getRemote().sendString(gson.toJson(errorMessage));
             return;
         }
-        TeamColor playerColor;
         String username;
         try {
             username = authDAO.getAuth(command.getAuthToken()).username();
@@ -87,16 +86,14 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             ctx.session.getRemote().sendString(gson.toJson(errorMessage));
             return;
         }
-        if (Objects.equals(username, game.whiteUsername())) {
-            playerColor = TeamColor.WHITE;
-        } else if (Objects.equals(username, game.blackUsername())) {
-            playerColor = TeamColor.BLACK;
-        } else {
+        boolean playerIsWhite = Objects.equals(username, game.whiteUsername());
+        boolean playerIsBlack = Objects.equals(username, game.blackUsername());
+        if (!playerIsWhite && !playerIsBlack) {
             ErrorMessage errorMessage = new ErrorMessage("Error: unauthorized");
             ctx.session.getRemote().sendString(gson.toJson(errorMessage));
             return;
         }
-        if (game.game().getTeamTurn() != playerColor) {
+        if ((game.game().getTeamTurn() == TeamColor.WHITE && !playerIsWhite) || (game.game().getTeamTurn() == TeamColor.BLACK && !playerIsBlack)) {
             ErrorMessage errorMessage = new ErrorMessage("Error: Cannot play when it is not your turn!");
             ctx.session.getRemote().sendString(gson.toJson(errorMessage));
             return;
@@ -107,13 +104,18 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             return;
         }
         TeamColor colorAtStart = movingPiece.getTeamColor();
-        if (colorAtStart != playerColor) {
+        if ((colorAtStart == TeamColor.WHITE && !playerIsWhite) || (colorAtStart == TeamColor.BLACK && !playerIsBlack)) {
             ErrorMessage errorMessage = new ErrorMessage("Error: Cannot move a piece that is not yours!");
             ctx.session.getRemote().sendString(gson.toJson(errorMessage));
             return;
         }
         Collection<ChessMove> validMoves = game.game().validMoves(start);
         if (validMoves == null || !validMoves.contains(moveRequest)) {
+            ErrorMessage errorMessage = new ErrorMessage("Error: Invalid move pattern!");
+            ctx.session.getRemote().sendString(gson.toJson(errorMessage));
+            return;
+        }
+        if (colorAtStart != game.game().getTeamTurn()) {
             ErrorMessage errorMessage = new ErrorMessage("Error: Invalid move pattern!");
             ctx.session.getRemote().sendString(gson.toJson(errorMessage));
             return;
