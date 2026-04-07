@@ -186,10 +186,13 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
     private void executeLeave(WsMessageContext ctx, UserGameCommand command) throws Exception {
         connectionManager.remove(ctx.session);
-        if (gson.fromJson(command.getRole(), TeamColor.class) == TeamColor.WHITE) {
+        GameData game = gameDAO.getGame(command.getGameID());
+        AuthData auth = authDAO.getAuth(command.getAuthToken());
+        String username = auth.username();
+        if (Objects.equals(game.whiteUsername(), username)) {
             gameDAO.updateWhitePlayer(command.getGameID(), null);
         }
-        if (gson.fromJson(command.getRole(), TeamColor.class) == TeamColor.BLACK) {
+        if (Objects.equals(game.blackUsername(), username)) {
             gameDAO.updateBlackPlayer(command.getGameID(), null);
         }
         NotificationMessage notification = new NotificationMessage(command.getUsername() + " has left the game");
