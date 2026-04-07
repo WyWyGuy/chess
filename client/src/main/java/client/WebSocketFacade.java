@@ -1,6 +1,7 @@
 package client;
 
 import chess.ChessGame;
+import chess.ChessMove;
 import com.google.gson.Gson;
 import jakarta.websocket.*;
 import ui.UserInterface;
@@ -65,6 +66,12 @@ public class WebSocketFacade extends Endpoint {
         session.getBasicRemote().sendText(commandStr);
     }
 
+    public void makeMove(int gameID, String authToken, String username, ChessMove moveRequest, boolean isWhite) throws Exception {
+        UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken, gameID, username, null, moveRequest, (isWhite ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK));
+        String commandStr = gson.toJson(command);
+        session.getBasicRemote().sendText(commandStr);
+    }
+
     private void handleNotification(NotificationMessage notification) {
         System.out.println();
         System.out.println(notification.getMessage());
@@ -74,7 +81,7 @@ public class WebSocketFacade extends Endpoint {
     private void handleLoadGame(LoadGameMessage loadGame) {
         ui.curr_state = loadGame.getGame();
         System.out.println();
-        ui.renderChessBoard(loadGame.getGame(), loadGame.getIsWhite());
+        ui.renderChessBoard(loadGame.getGame());
         System.out.print("Enter a command (type 'help' for a list of commands): ");
     }
 

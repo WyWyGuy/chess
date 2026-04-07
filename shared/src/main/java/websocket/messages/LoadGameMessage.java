@@ -5,20 +5,14 @@ import chess.ChessGame;
 public class LoadGameMessage extends ServerMessage {
 
     private ChessGame game;
-    private boolean isWhite;
 
-    public LoadGameMessage(ChessGame game, boolean isWhite) {
+    public LoadGameMessage(ChessGame game) {
         super(ServerMessage.ServerMessageType.LOAD_GAME);
         this.game = game;
-        this.isWhite = isWhite;
     }
 
     public ChessGame getGame() {
         return game;
-    }
-
-    public boolean getIsWhite() {
-        return isWhite;
     }
 
 }

@@ -1,5 +1,6 @@
 package dataaccess;
 
+import chess.ChessGame;
 import model.GameData;
 
 import java.util.List;
@@ -23,5 +24,7 @@ public interface GameDAO {
     void markGameOver(int id) throws DataAccessException;
 
     boolean gameIsOver(int id) throws DataAccessException;
+
+    void updateGame(int id, GameData game) throws DataAccessException;
 
 }

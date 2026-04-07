@@ -1,7 +1,6 @@
 package dataaccess;
 
 import model.GameData;
-import model.UserData;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -82,6 +81,11 @@ public class MemoryGameDAO implements GameDAO {
             throw new DataAccessException("Game " + id + " does not exist");
         }
         return this.games.get(id);
+    }
+
+    @Override
+    public void updateGame(int id, GameData game) throws DataAccessException {
+        games.put(id, game);
     }
 
 }

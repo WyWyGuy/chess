@@ -4,6 +4,7 @@ import chess.ChessGame;
 import com.google.gson.Gson;
 import model.GameData;
 
+import javax.xml.crypto.Data;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -175,6 +176,24 @@ public class DatabaseGameDAO implements GameDAO {
             throw new DataAccessException("Error: could not find game " + id);
         } catch (SQLException e) {
             throw new DataAccessException("Error: could not return game " + id, e);
+        }
+    }
+
+    @Override
+    public void updateGame(int id, GameData game) throws DataAccessException {
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement("UPDATE games SET whiteUsername = ?, blackUsername = ?, gameName = ?, game = ?, gameOver = ? WHERE gameID = ?")) {
+            stmt.setString(1, game.whiteUsername());
+            stmt.setString(2, game.blackUsername());
+            stmt.setString(3, game.gameName());
+            stmt.setString(4, gson.toJson(game.game()));
+            int updated = stmt.executeUpdate();
+            ResultSet rs = stmt.getGeneratedKeys();
+            if (updated == 0) {
+                throw new DataAccessException("Error: could not find game " + id);
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Error: could not update game " + game.gameName(), e);
         }
     }
 

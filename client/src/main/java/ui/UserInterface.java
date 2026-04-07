@@ -1,15 +1,15 @@
 package ui;
 
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.ChessPiece;
+import chess.ChessPosition;
 import client.ServerFacade;
 import client.WebSocketFacade;
 import model.AuthData;
 import model.GameData;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Scanner;
+import java.util.*;
 
 public class UserInterface {
 
@@ -22,6 +22,7 @@ public class UserInterface {
     private int port;
     private AuthData auth;
     public ChessGame curr_state;
+    private boolean renderWhite;
 
     public UserInterface(String hostname, int port) {
         serverFacade = new ServerFacade(hostname, port);
@@ -69,7 +70,9 @@ public class UserInterface {
             webSocketFacade.join(gameID, auth.authToken(), username, isWhite);
         } catch (Exception e) {
             System.out.println("An error occurred while trying to connect to the game");
+            e.printStackTrace();
         }
+        renderWhite = isWhite;
         boolean running = true;
         while (running) {
             System.out.print("Enter a command (type 'help' for a list of commands): ");
@@ -77,8 +80,8 @@ public class UserInterface {
             switch (command) {
                 case "leave" -> running = executeGameLeave(gameID, auth.authToken(), username, isWhite);
                 case "help" -> executeGameHelp();
-                case "redraw chess board" -> renderChessBoard(curr_state, isWhite);
-                case "make move" -> executeMakeMove();
+                case "redraw chess board" -> renderChessBoard(curr_state);
+                case "make move" -> executeMakeMove(gameID, auth.authToken(), username, isWhite);
                 case "resign" -> executeResign(gameID, auth.authToken(), username);
                 case "highlight legal moves" -> executeHighlightMoves(curr_state, isWhite);
             }
@@ -92,15 +95,17 @@ public class UserInterface {
             webSocketFacade.observe(gameID, auth.authToken(), username);
         } catch (Exception e) {
             System.out.println("An error occurred while trying to connect to the game");
+            e.printStackTrace();
         }
         boolean running = true;
+        renderWhite = true;
         while (running) {
             System.out.print("Enter a command (type 'help' for a list of commands): ");
             String command = scanner.nextLine().trim().toLowerCase();
             switch (command) {
                 case "leave" -> running = executeObserverLeave(gameID, auth.authToken(), username);
                 case "help" -> executeObserverHelp();
-                case "redraw chess board" -> renderChessBoard(curr_state, true);
+                case "redraw chess board" -> renderChessBoard(curr_state);
                 case "highlight legal moves" -> executeHighlightMoves(curr_state, true);
             }
         }
@@ -300,8 +305,8 @@ public class UserInterface {
         System.out.println("Redraw Chess Board - rerender the chess board in its current state");
     }
 
-    public void renderChessBoard(ChessGame game, boolean isWhite) {
-        chessDisplay.drawBoard(game, isWhite, null, new HashSet<>());
+    public void renderChessBoard(ChessGame game) {
+        chessDisplay.drawBoard(game, renderWhite, null, new HashSet<>());
     }
 
     private boolean executeGameLeave(int gameID, String authToken, String username, boolean isWhite) {
@@ -310,6 +315,7 @@ public class UserInterface {
             return false;
         } catch (Exception e) {
             System.out.println("An error occurred when trying to leave the game");
+            e.printStackTrace();
             return true;
         }
     }
@@ -320,6 +326,7 @@ public class UserInterface {
             return false;
         } catch (Exception e) {
             System.out.println("An error occurred when trying to leave the game");
+            e.printStackTrace();
             return true;
         }
     }
@@ -332,6 +339,7 @@ public class UserInterface {
                 webSocketFacade.resign(gameID, authToken, username);
             } catch (Exception e) {
                 System.out.println("An error occurred when trying to resign");
+                e.printStackTrace();
             }
         }
     }
@@ -339,25 +347,76 @@ public class UserInterface {
     private void executeHighlightMoves(ChessGame game, boolean isWhite) {
         System.out.print("Display moves for which cell? ");
         String provided = scanner.nextLine().trim().toLowerCase();
-        boolean valid = true;
-        if (provided.length() != 2) {
-            valid = false;
-        }
-        if ("abcdefgh".indexOf(provided.charAt(0)) == -1) {
-            valid = false;
-        }
-        if ("12345678".indexOf(provided.charAt(1)) == -1) {
-            valid = false;
-        }
-
-        if (valid) {
+        if (validCell(provided)) {
             chessDisplay.renderHighlights(game, isWhite, Integer.parseInt(provided.substring(1)) - 1, provided.charAt(0) - 'a');
         } else {
             System.out.println(provided + " is not a valid cell");
         }
     }
 
-    private void executeMakeMove() {
-        //TODO
+    private void executeMakeMove(int gameID, String authToken, String username, boolean isWhite) {
+        System.out.print("Move from where? ");
+        String start = scanner.nextLine().trim().toLowerCase();
+        if (!validCell(start)) {
+            System.out.println(start + " is not a valid cell");
+            return;
+        }
+        System.out.print("Move to where? ");
+        String end = scanner.nextLine().trim().toLowerCase();
+        if (!validCell(end)) {
+            System.out.println(end + " is not a valid cell");
+            return;
+        }
+        int startRow = Integer.parseInt(start.substring(1));
+        int startCol = start.charAt(0) - 'a' + 1;
+        int endRow = Integer.parseInt(end.substring(1));
+        int endCol = end.charAt(0) - 'a' + 1;
+        ChessPosition startPosition = new ChessPosition(startRow, startCol);
+        ChessPosition endPosition = new ChessPosition(endRow, endCol);
+        ChessPiece movingPiece = curr_state.getBoard().getPiece(startPosition);
+        ChessPiece.PieceType promotion = null;
+        if (movingPiece != null && movingPiece.getPieceType() == ChessPiece.PieceType.PAWN) {
+            if ((isWhite && endPosition.getRow() == 8) || (!isWhite && endPosition.getRow() == 1)) {
+                System.out.print("Promote pawn to? ");
+                String promoteTo = scanner.nextLine().trim().toLowerCase();
+                if (Set.of("queen", "rook", "knight", "bishop").contains(promoteTo)) {
+                    switch (promoteTo) {
+                        case "queen":
+                            promotion = ChessPiece.PieceType.QUEEN;
+                            break;
+                        case "rook":
+                            promotion = ChessPiece.PieceType.ROOK;
+                            break;
+                        case "knight":
+                            promotion = ChessPiece.PieceType.KNIGHT;
+                            break;
+                        case "bishop":
+                            promotion = ChessPiece.PieceType.BISHOP;
+                            break;
+                    }
+                } else {
+                    System.out.println(promoteTo + " is not a valid promotion");
+                    return;
+                }
+            }
+        }
+        ChessMove moveRequest = new ChessMove(startPosition, endPosition, promotion);
+        try {
+            webSocketFacade.makeMove(gameID, authToken, username, moveRequest, isWhite);
+        } catch (Exception e) {
+            System.out.println("An error occurred when trying to perform the move");
+            e.printStackTrace();
+        }
+    }
+
+    private boolean validCell(String provided) {
+        boolean valid = provided.length() == 2;
+        if ("abcdefgh".indexOf(provided.charAt(0)) == -1) {
+            valid = false;
+        }
+        if ("12345678".indexOf(provided.charAt(1)) == -1) {
+            valid = false;
+        }
+        return valid;
     }
 }
