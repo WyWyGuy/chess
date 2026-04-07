@@ -9,6 +9,7 @@ import dataaccess.DatabaseAuthDAO;
 import dataaccess.DatabaseGameDAO;
 import dataaccess.GameDAO;
 import io.javalin.websocket.*;
+import model.AuthData;
 import model.GameData;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ErrorMessage;
@@ -54,10 +55,12 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             return;
         }
         try {
-            connectionManager.add(command.getGameID(), ctx.session);
+            AuthData auth = authDAO.getAuth(command.getAuthToken());
+            String username = auth.username();
+            connectionManager.add(command.getGameID(), ctx.session, username);
             LoadGameMessage loadGame = new LoadGameMessage(gameDAO.getGame(command.getGameID()).game());
             ctx.session.getRemote().sendString(gson.toJson(loadGame));
-            NotificationMessage notification = new NotificationMessage(command.getUsername() + " has connected to the game as " + command.getRole());
+            NotificationMessage notification = new NotificationMessage(username + " has connected to the game as " + command.getRole());
             connectionManager.broadcast(notification, command.getGameID(), ctx.session);
         } catch (Exception e) {
             ErrorMessage errorMessage = new ErrorMessage("Error: could not connect to the game");
@@ -182,14 +185,14 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
     private void executeLeave(WsMessageContext ctx, UserGameCommand command) throws Exception {
-        connectionManager.remove(command.getGameID(), ctx.session);
+        connectionManager.remove(ctx.session);
         if (gson.fromJson(command.getRole(), TeamColor.class) == TeamColor.WHITE) {
             gameDAO.updateWhitePlayer(command.getGameID(), null);
         }
         if (gson.fromJson(command.getRole(), TeamColor.class) == TeamColor.BLACK) {
             gameDAO.updateBlackPlayer(command.getGameID(), null);
         }
-        NotificationMessage notification = new NotificationMessage(command.getUsername() + " has left to the game");
+        NotificationMessage notification = new NotificationMessage(command.getUsername() + " has left the game");
         connectionManager.broadcast(notification, command.getGameID(), ctx.session);
     }
 
@@ -218,5 +221,27 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
     @Override
     public void handleClose(WsCloseContext ctx) {
+        Integer gameID = connectionManager.getGame(ctx.session);
+        String username = connectionManager.getUser(ctx.session);
+        if (gameID == null || username == null) {
+            return;
+        }
+        try {
+            GameData game = gameDAO.getGame(gameID);
+            if (Objects.equals(game.whiteUsername(), username)) {
+                gameDAO.updateWhitePlayer(gameID, null);
+            } else if (Objects.equals(game.blackUsername(), username)) {
+                gameDAO.updateBlackPlayer(gameID, null);
+            }
+        } catch (Exception e) {
+            // pass
+        }
+        try {
+            NotificationMessage notification = new NotificationMessage(username + " has left the game");
+            connectionManager.broadcast(notification, gameID, ctx.session);
+        } catch (Exception e) {
+            // pass
+        }
+        connectionManager.remove(ctx.session);
     }
 }

@@ -11,24 +11,23 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ConnectionManager {
 
     private final ConcurrentHashMap<Integer, Set<Session>> connections = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Session, String> sessionToUser = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Session, Integer> sessionToGame = new ConcurrentHashMap<>();
     private final Gson gson = new Gson();
 
-    public void add(int gameID, Session session) {
+    public void add(int gameID, Session session, String username) {
         connections.putIfAbsent(gameID, ConcurrentHashMap.newKeySet());
         connections.get(gameID).add(session);
-    }
-
-    public void remove(int gameID, Session session) {
-        var set = connections.get(gameID);
-        if (set != null) {
-            set.remove(session);
-        }
+        sessionToUser.put(session, username);
+        sessionToGame.put(session, gameID);
     }
 
     public void remove(Session session) {
         for (Set<Session> set : connections.values()) {
             set.remove(session);
         }
+        sessionToUser.remove(session);
+        sessionToGame.remove(session);
     }
 
     public void broadcast(ServerMessage notification, int gameID, Session excludeSession) throws Exception {
@@ -42,6 +41,14 @@ public class ConnectionManager {
                 s.getRemote().sendString(msg);
             }
         }
+    }
+
+    public String getUser(Session session) {
+        return sessionToUser.get(session);
+    }
+
+    public Integer getGame(Session session) {
+        return sessionToGame.get(session);
     }
 
 }
