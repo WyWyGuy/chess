@@ -6,6 +6,7 @@ import client.WebSocketFacade;
 import model.AuthData;
 import model.GameData;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
@@ -79,7 +80,7 @@ public class UserInterface {
                 case "redraw chess board" -> renderChessBoard(curr_state, isWhite);
                 case "make move" -> executeMakeMove();
                 case "resign" -> executeResign(gameID, auth.authToken(), username);
-                case "highlight legal moves" -> executeHighlightMoves();
+                case "highlight legal moves" -> executeHighlightMoves(curr_state, isWhite);
             }
         }
     }
@@ -100,7 +101,7 @@ public class UserInterface {
                 case "leave" -> running = executeObserverLeave(gameID, auth.authToken(), username);
                 case "help" -> executeObserverHelp();
                 case "redraw chess board" -> renderChessBoard(curr_state, true);
-                case "highlight legal moves" -> executeHighlightMoves();
+                case "highlight legal moves" -> executeHighlightMoves(curr_state, true);
             }
         }
     }
@@ -300,7 +301,7 @@ public class UserInterface {
     }
 
     public void renderChessBoard(ChessGame game, boolean isWhite) {
-        chessDisplay.drawBoard(game, isWhite);
+        chessDisplay.drawBoard(game, isWhite, null, new HashSet<>());
     }
 
     private boolean executeGameLeave(int gameID, String authToken, String username, boolean isWhite) {
@@ -335,8 +336,25 @@ public class UserInterface {
         }
     }
 
-    private void executeHighlightMoves() {
-        //TODO
+    private void executeHighlightMoves(ChessGame game, boolean isWhite) {
+        System.out.print("Display moves for which cell? ");
+        String provided = scanner.nextLine().trim().toLowerCase();
+        boolean valid = true;
+        if (provided.length() != 2) {
+            valid = false;
+        }
+        if ("abcdefgh".indexOf(provided.charAt(0)) == -1) {
+            valid = false;
+        }
+        if ("12345678".indexOf(provided.charAt(1)) == -1) {
+            valid = false;
+        }
+
+        if (valid) {
+            chessDisplay.renderHighlights(game, isWhite, Integer.parseInt(provided.substring(1)) - 1, provided.charAt(0) - 'a');
+        } else {
+            System.out.println(provided + " is not a valid cell");
+        }
     }
 
     private void executeMakeMove() {
